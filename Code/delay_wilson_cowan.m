@@ -306,11 +306,42 @@ yticklabels({'', '0.075', '', '0.085', '', '0.095', '', '0.105'});
 % Save figure
 print(gcf, '../Figures/Figure_9b.png', '-dpng', '-r300');
 
+%% Figure 8 Replicate
+% Liapunov exponent attempts to compute the maximum Liapunov exponent of
+% the current simulation. The method is pretty simplistic but works on the
+% examples I have fed it. Given a solution x(t) at a series of points
+% t1, ..., tn I perturb the solution at each time point, integrate the
+% equation to the next time point, and compute the logarithm of the rate of
+% growth. This is averaged over the whole time series to give an
+% approximation. The size of the perturbation is determined by the
+% numerical parameter ptbn.
+
+% Select Parameters
+p.alpha = 1; p.beta = 60;
+p.a = -6; p.b = 2.5;
+p.c = p.b; p.d = p.a;
+p.tau1 = 0.1; p.tau2 = p.tau1;
+
+% Find u* and v* such that θu = 0.2 & θv = 0.2
+p.theta_u = 0.2;
+p.theta_v = p.theta_u;
+[p.u, p.v] = calcBias(p, p.theta_u, p.theta_v);
+
+% Define DDE parameters
+p.tspan = [0 5];
+p.delays = [p.tau1 p.tau2];
+p.history = [0.074 0.077];
+p.options = ddeset('RelTol', 1e-5);
+
+ptbn = 0.001;
+
+% Calculate maximal lyapunov exponent
+lambda_max = lyapunovExponent(@(t, y, Z) ddefun(t, y, Z, p), p, ptbn);
+
 %% --------------------------------------------------------------------- %%
 % ------------------------------- f(x,p) -------------------------------- %
     % Define the inverse sigmoid function, for z = u,v
     function f = f(z,p)
-        % f = heaviside(z);
         f = 1 ./ (1 + exp(-p.beta * z));
     end
 
