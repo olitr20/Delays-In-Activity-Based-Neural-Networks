@@ -63,12 +63,19 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
         plot(perturbed_sol.y(1,:), perturbed_sol.y(2,:), ...
             '-', 'LineWidth', 1, 'color', '#f77e1b');
 
-        % Compute the logarithm of the rate of growth 
-        log_growth_rate = [];
+        % Extract perturbed state at t_next
+        x_t_perturbed = deval(perturbed_sol, t_max);
+
+        % Compute the Euclidean norm of the distance between trajectories
+        distance_perturbed = norm(x_t_perturbed - x_t);
+        norm_growth = distance_perturbed / norm(perturbation);
+
+        % Compute the logarithm of the rate of growth
+        log_growth_rates(i) = log(norm_growth);
     end
 
     % Average log(growth rate) over the whole time series
-    lambda_max = [];
+    lambda_max = mean(log_growth_rates);
 
     % Finalise plot
     hold off;
