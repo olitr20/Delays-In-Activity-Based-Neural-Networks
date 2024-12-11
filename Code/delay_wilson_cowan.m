@@ -38,6 +38,7 @@ yticklabels({'-12','','-8','','-4','','0'})
 text(0, -9.2, "HB", 'FontSize', 14, 'FontName', 'Times')
 text(5, -4, "SN", 'FontSize', 14, 'FontName', 'Times')
 
+% Save figure
 print(gcf, '../Figures/Figure_1a.png', '-dpng', '-r300');
 
 %% Figure 1 Replicate - With Bogdanov-Takens Bifurcations
@@ -85,6 +86,7 @@ yticklabels({'-12','','-8','','-4','','0'})
 text(0, -9.2, "HB", 'FontSize', 14, 'FontName', 'Times')
 text(5, -4, "SN", 'FontSize', 14, 'FontName', 'Times')
 
+% Save figure
 print(gcf, '../Figures/Figure_1b.png', '-dpng', '-r300');
 
 %% Figure 2 Replicate
@@ -96,7 +98,6 @@ p.c = 10; p.d = 2;
 % Find u* and v* such that θu = -2 & θv = -4
 p.theta_u = -2;
 p.theta_v = -4;
-
 [p.u, p.v] = calcBias(p, p.theta_u, p.theta_v);
 
 % Specify ranges for tau1, tau2, and omega
@@ -104,6 +105,7 @@ p.tau1_vals = linspace(0, 12, 121); % Range of tau1
 p.tau2_vals = linspace(0, 1.5, 3); % Range of tau2
 p.omega_vals = linspace(0, 2.5, 7); % Omega range
 
+% Calculate hopf bifurcation lines in \tau_{1} and \tau_{2}
 bifn = ddeBifn(p);
 
 % Initialise figure 2
@@ -132,6 +134,7 @@ annotation('textbox',[0.3028 0.5262 0.0969 0.0619],'String','stable',...
 annotation('textbox',[0.5081 0.3905 0.1219 0.0619],'String','unstable',...
     'FontSize',14,'FontName','Times','EdgeColor','none');
 
+% Save figure
 print(gcf, '../Figures/Figure_2.png', '-dpng', '-r300');
 
 %% Figure 3 Replicate
@@ -144,14 +147,16 @@ p.tau1 = 1; p.tau2 = 1.4;
 % Find u* and v* such that θu = 0.7 & θv = 0.7
 p.theta_u = 0.7;
 p.theta_v = 0.7;
-
 [p.u, p.v] = calcBias(p, p.theta_u, p.theta_v);
 
+% Define DDE parameters
 p.tspan = [0 15];
 p.delays = [p.tau1 p.tau2];
 p.history1 = [0.37 0.8];
 p.history2 = [0.2 0.8];
 p.options = ddeset('RelTol', 1e-5);
+
+% Solve DDE
 sol.Synchronous = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
     p.delays,p.history1,p.tspan,p.options);
 sol.AntiSynchronous = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
@@ -168,9 +173,9 @@ hold on;
 
 % Plot synchronous solution
 plot(sol.Synchronous.x, sol.Synchronous.y(1,:), ...
-    'k', 'linewidth', 1.5);
+    'k', 'linewidth', 1.5); % u against time
 dashline(sol.Synchronous.x,sol.Synchronous.y(2,:), ...
-    1.5, 1, 1.5, 1, 'color', '#808080', 'linewidth', 1.5)
+    1.5, 1, 1.5, 1, 'color', '#808080', 'linewidth', 1.5) % v against time
 
 % Format axes
 set(gca,'FontSize', 14, 'FontName', 'Times')
@@ -187,9 +192,9 @@ hold on;
 
 % Plot antisynchronous solution
 plot(sol.AntiSynchronous.x, sol.AntiSynchronous.y(1,:), ...
-    'k', 'linewidth', 1.5);
+    'k', 'linewidth', 1.5); % u against time
 dashline(sol.AntiSynchronous.x,sol.AntiSynchronous.y(2,:), ...
-    1.5, 1, 1.5, 1, 'color', '#808080', 'linewidth', 1.5)
+    1.5, 1, 1.5, 1, 'color', '#808080', 'linewidth', 1.5) % v against time
 
 % Format axes
 xlabel("$\mathit{t}$", 'Interpreter', 'latex')
@@ -210,24 +215,113 @@ annotation('textbox',[0.15 0.38 0.0446 0.0536],'String','$\mathit{u}$',...
 annotation('textbox',[0.15 0.21 0.0446 0.0536],'String','$\mathit{v}$',...
     'FontSize',14,'EdgeColor','none','Interpreter','latex');
 
+% Save figure
 print(gcf, '../Figures/Figure_3.png', '-dpng', '-r300');
+
+%% Figure 9a Replicate
+% Select Parameters
+p.alpha = 1; p.beta = 60;
+p.a = -6; p.b = 2.5;
+p.c = 2.5; p.d = -6;
+p.tau1 = 0.1; p.tau2 = 0.1;
+
+% Find u* and v* such that θu = 0.2 & θv = 0.2
+p.theta_u = 0.2;
+p.theta_v = 0.2;
+[p.u, p.v] = calcBias(p, p.theta_u, p.theta_v);
+
+% Define DDE parameters
+p.tspan = [0 40];
+p.delays = [p.tau1 p.tau2];
+p.history = [0.074 0.077];
+p.options = ddeset('RelTol', 1e-5);
+
+% Solve DDE
+sol.Chaotic = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
+    p.delays,p.history,p.tspan,p.options);
+
+% Initialise figure 4
+figure(8)
+clf; hold on
+
+% Plot chotic solution
+plot(sol.Chaotic.y(1,:), sol.Chaotic.y(2,:), ...
+    'k', 'linewidth', 1.5); % u against v
+
+% Format axes
+xlabel("$\mathit{u}$", 'Interpreter', 'latex')
+ylabel("$\mathit{v}$", 'Interpreter', 'latex','rotation',0)
+set(gca,'FontSize', 14, 'FontName', 'Times')
+xlim([0.062, 0.178]);
+ylim([0.06, 0.18]);
+xticks([0.08 0.1 0.12 0.14 0.16])
+yticks([0.06 0.08 0.1 0.12 0.14 0.16 0.18])
+xticklabels({'0.08', '', '0.12', '', '0.16', ''});
+yticklabels({'0.06', '', '0.10', '', '0.14', '', '0.18'});
+
+% Save figure
+print(gcf, '../Figures/Figure_9a.png', '-dpng', '-r300');
+
+%% Figure 9b Replicate
+% Select Parameters
+p.alpha = 1; p.beta = 40;
+p.a = -6; p.b = 2.5;
+p.c = 2.5; p.d = -6;
+p.tau1 = 0.1; p.tau2 = 0.1;
+
+% Find u* and v* such that θu = 0.2 & θv = 0.2
+p.theta_u = 0.2;
+p.theta_v = 0.2;
+[p.u, p.v] = calcBias(p, p.theta_u, p.theta_v);
+
+% Define DDE parameters
+p.tspan = [0 40];
+p.delays = [p.tau1 p.tau2];
+p.history = [0.074 0.077];
+p.options = ddeset('RelTol', 1e-5);
+
+% Solve DDE
+sol.QuasiPeriodic = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
+    p.delays,p.history,p.tspan,p.options);
+
+% Initialise figure 4
+figure(9)
+clf; hold on
+
+% Plot chotic solution
+plot(sol.QuasiPeriodic.y(1,:), sol.QuasiPeriodic.y(2,:), ...
+    'k', 'linewidth', 1.5); % u against v
+
+% Format axes
+xlabel("$\mathit{u}$", 'Interpreter', 'latex')
+ylabel("$\mathit{v}$", 'Interpreter', 'latex','rotation',0)
+set(gca,'FontSize', 14, 'FontName', 'Times')
+xlim([0.07, 0.105]);
+ylim([0.07, 0.105]);
+xticks([0.07 0.075 0.08 0.085 0.09 0.095 0.1 0.105])
+yticks([0.07 0.075 0.08 0.085 0.09 0.095 0.1 0.105])
+xticklabels({'', '', '0.08', '', '0.09', '', '0.10', ''});
+yticklabels({'', '0.075', '', '0.085', '', '0.095', '', '0.105'});
+
+% Save figure
+print(gcf, '../Figures/Figure_9b.png', '-dpng', '-r300');
 
 %% --------------------------------------------------------------------- %%
 % ------------------------------- f(x,p) -------------------------------- %
     % Define the inverse sigmoid function, for z = u,v
-    function f = f(z)
+    function f = f(z,p)
         % f = heaviside(z);
-        f = 1 ./ (1 + exp(-600 * z));
+        f = 1 ./ (1 + exp(-p.beta * z));
     end
 
 % ---------------------------- ddefun(t,y,Z) ---------------------------- %
     function d = ddefun(~,y,Z,p)
         dudt = -y(1) + ...
             f(p.theta_u + p.a .* Z(1,1) + ...
-            p.b .* Z(2,2));
+            p.b .* Z(2,2),p);
         dvdt = p.alpha .* ...
             (-y(2) + f(p.theta_v + p.c .* Z(1,2) + ...
-            p.d .* Z(2,1)));
+            p.d .* Z(2,1),p));
     
         d = [dudt; dvdt];
     end
