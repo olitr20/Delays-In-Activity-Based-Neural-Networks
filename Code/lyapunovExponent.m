@@ -40,18 +40,20 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
         t_current = time_points(i);
         x_t = deval(sol, t_current);
 
-        % Compute the tangent vector (approximated as the derivative)
-        dx_dt = (deval(sol, time_points(min(i+1, N))) - x_t) / (time_points(min(i+1, N)) - t_current);
+        % Generate a perturbation vector perpendicular to trajectory
+        tang_vec = (deval(sol, time_points(min(i+1, N))) - x_t) / ...
+                              (time_points(min(i+1, N)) - t_current); % compute tengent vector
+        perp_vec = [-tang_vec(2), tang_vec(1)]; % rotate 90 degrees
+        norm_vec = perp_vec / norm(perp_vec);
 
-        % Generate a perturbation vector perpendicular to the trajectory
-        perp_vector = [-dx_dt(2), dx_dt(1)]; % Rotate 90 degrees
+        % Randomise sign of perturbation
         ptbn_r = ptbn * (randi([0, 1]) * 2 - 1);
-        perturbation = ptbn_r * perp_vector;
+
+        % Calculate perturbation vector
+        perturbation = ptbn_r * norm_vec;
 
         % Integrate the perturbed solution to the next time point
         t_next = time_points(i+1);
-        % perturbed_history = @(t) deval(sol, t);% + perturbation; % Adjust the history for perturbed solution
-
         perturbed_sol = dde23(ddefun, delays, @perturbed_history, [t_current t_next], options);
 
         % Plot the perturbation
