@@ -139,7 +139,7 @@ print(gcf, '../Figures/Figure_2.png', '-dpng', '-r300');
 
 %% Figure 3 Replicate
 % Select Parameters
-p.alpha = 1; p.beta = 1;
+p.alpha = 1; p.beta = 700; % high beta approximates heaviside
 p.a = -1; p.b = -0.4;
 p.c = -0.4; p.d = -1;
 p.tau1 = 1; p.tau2 = 1.4;
