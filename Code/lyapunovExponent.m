@@ -26,25 +26,32 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
     % Preallocate storage for logarithm of growth rates
     log_growth_rates = zeros(1, N-1);
 
-    % Prepare figure for plotting
+    % Initialise figure 10
     figure(10);
     clf; hold on;
-    plot(main_trajectory(1, :), main_trajectory(2, :), 'k', 'LineWidth', 1.5);
+
+    % Plot main trajectory
+    plot(main_trajectory(1, :), main_trajectory(2, :), ...
+        'k', 'LineWidth', 1.5);
+
+    % Format axes
     xlabel("$\mathit{u}$", 'Interpreter', 'latex')
     ylabel("$\mathit{v}$", 'Interpreter', 'latex','rotation',0)
     set(gca,'FontSize', 14, 'FontName', 'Times')
 
-    % Loop over each time interval
+    % Loop over each time step
     for i = 1:N-1
-        % Current state
+        % Calculate current and next states on main trajectory
         t_current = time_points(i);
-        x_t = deval(sol, t_current);
+        t_next = time_points(i+1);
+        x_current = deval(sol, t_current);
+        x_next = deval(sol, t_next);
 
         % Generate a perturbation vector perpendicular to trajectory
-        tang_vec = (deval(sol, time_points(min(i+1, N))) - x_t) / ...
-                              (time_points(min(i+1, N)) - t_current); % compute tengent vector
+        tang_vec = (deval(sol, time_points(min(i+1, N))) - x_current) / ...
+            (time_points(min(i+1, N)) - t_current); % compute tangent vec
         perp_vec = [-tang_vec(2), tang_vec(1)]; % rotate 90 degrees
-        norm_vec = perp_vec / norm(perp_vec);
+        norm_vec = perp_vec / norm(perp_vec); % normalise vec
 
         % Randomise sign of perturbation
         ptbn_r = ptbn * (randi([0, 1]) * 2 - 1);
@@ -53,8 +60,8 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
         perturbation = ptbn_r * norm_vec;
 
         % Integrate the perturbed solution to the next time point
-        t_next = time_points(i+1);
-        perturbed_sol = dde23(ddefun, delays, @perturbed_history, [t_current t_next], options);
+        perturbed_sol = dde23(ddefun, delays, @perturbed_history, ...
+            [t_current t_next], options);
 
         % Plot the perturbation
         plot(perturbed_sol.y(1,1), perturbed_sol.y(2,1), ...
@@ -63,13 +70,13 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
             '-', 'LineWidth', 1, 'color', '#f77e1b');
 
         % Extract perturbed state at t_next
-        x_t_perturbed = deval(perturbed_sol, t_next);
+        x_next_perturbed = deval(perturbed_sol, t_next);
 
-        % Compute the Euclidean norm of the distance between trajectories
-        distance_perturbed = norm(x_t_perturbed - x_t);
+        % Calculate distance between trajectories at t_next
+        distance_perturbed = norm(x_next_perturbed - x_next);
         norm_growth = distance_perturbed / norm(perturbation);
 
-        % Compute the logarithm of the rate of growth
+        % Calculate the log rate of growth
         log_growth_rates(i) = log(norm_growth);
     end
 
