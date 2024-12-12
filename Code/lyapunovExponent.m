@@ -62,6 +62,9 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
         % Integrate the perturbed solution to the next time point
         perturbed_sol = dde23(ddefun, delays, @perturbed_history, ...
             [t_current t_next], options);
+        % history_pt = deval(sol, t_current) + perturbation';
+        % perturbed_sol = dde23(ddefun, delays, history_pt, ...
+        %     [t_current t_next], options);
 
         % Plot the perturbation
         plot(perturbed_sol.y(1,1), perturbed_sol.y(2,1), ...

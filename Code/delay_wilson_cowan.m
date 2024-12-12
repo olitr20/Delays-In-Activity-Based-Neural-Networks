@@ -318,7 +318,7 @@ print(gcf, '../Figures/Figure_9b.png', '-dpng', '-r300');
 
 % Select Parameters
 p.alpha = 1; p.beta = 60;
-p.a = -10; p.b = 3;
+p.a = -6; p.b = 2.5;
 p.c = p.b; p.d = p.a;
 p.tau1 = 0.1; p.tau2 = p.tau1;
 
