@@ -318,7 +318,7 @@ print(gcf, '../Figures/Figure_9b.png', '-dpng', '-r300');
 
 % Select Parameters
 p.alpha = 1; p.beta = 60;
-p.a = -6; p.b = 2.5;
+p.a = -6; p.b = 1;
 p.c = p.b; p.d = p.a;
 p.tau1 = 0.1; p.tau2 = p.tau1;
 
@@ -328,12 +328,12 @@ p.theta_v = p.theta_u;
 [p.u, p.v] = calcBias(p, p.theta_u, p.theta_v);
 
 % Define DDE parameters
-p.tspan = [0 20];
+p.tspan = [0 1];
 p.delays = [p.tau1 p.tau2];
 p.history = [0.074 0.077];
 p.options = ddeset('RelTol', 1e-5);
 
-ptbn = 0.001;
+ptbn = 0.01;
 
 % Calculate maximal lyapunov exponent
 lambda_max = lyapunovExponent(@(t, y, Z) ddefun(t, y, Z, p), p, ptbn);

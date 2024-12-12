@@ -29,13 +29,10 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
     % Prepare figure for plotting
     figure(10);
     clf; hold on;
-    plot(main_trajectory(1, :), main_trajectory(2, :), 'k', 'LineWidth', 1.5); % Main trajectory
+    plot(main_trajectory(1, :), main_trajectory(2, :), 'k', 'LineWidth', 1.5);
     xlabel("$\mathit{u}$", 'Interpreter', 'latex')
     ylabel("$\mathit{v}$", 'Interpreter', 'latex','rotation',0)
     set(gca,'FontSize', 14, 'FontName', 'Times')
-
-    % Initialise Lyapunov exponent accumulator
-    sum_log_norms = 0;
 
     % Loop over each time interval
     for i = 1:N-1
@@ -53,9 +50,9 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
 
         % Integrate the perturbed solution to the next time point
         t_next = time_points(i+1);
-        t_max = t_next-t_current;
-        perturbed_history = sol.y(:,i)' + perturbation; % Adjust the history for perturbed solution
-        perturbed_sol = dde23(ddefun, delays, perturbed_history, [0, t_max], options);
+        % perturbed_history = @(t) deval(sol, t);% + perturbation; % Adjust the history for perturbed solution
+
+        perturbed_sol = dde23(ddefun, delays, @perturbed_history, [t_current t_next], options);
 
         % Plot the perturbation
         plot(perturbed_sol.y(1,1), perturbed_sol.y(2,1), ...
@@ -64,7 +61,7 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
             '-', 'LineWidth', 1, 'color', '#f77e1b');
 
         % Extract perturbed state at t_next
-        x_t_perturbed = deval(perturbed_sol, t_max);
+        x_t_perturbed = deval(perturbed_sol, t_next);
 
         % Compute the Euclidean norm of the distance between trajectories
         distance_perturbed = norm(x_t_perturbed - x_t);
@@ -79,4 +76,16 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
 
     % Finalise plot
     hold off;
+
+%% --------------------------------------------------------------------- %%
+% ------------------------- perturbed_history(t) ------------------------ %
+    % Define the history function
+    function h = perturbed_history(t)
+        pt = perturbation';
+        if t < 0
+            h = p.history' + pt;
+        elseif t >= 0 && t <= sol.x(end)
+            h = deval(sol, t) + pt;
+        end
+    end
 end
