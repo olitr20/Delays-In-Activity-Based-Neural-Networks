@@ -99,5 +99,17 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
         elseif t >= 0 && t <= sol.x(end)
             h = deval(sol, t) + pt;
         end
+
+        % if t < t_current
+        %     if t < 0
+        %         h = p.history'; % original history
+        %     else
+        %         h = deval(sol, t); % original trajectory
+        %     end
+        % elseif t == t_current
+        %     h = deval(sol, t) + pt; % apply perturbation at t_current
+        % else
+        %     h = deval(sol, t); % let system evolve naturally beyond t_current
+        % end
     end
 end
