@@ -19,8 +19,13 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
     sol = dde23(ddefun, delays, history, tspan, options);
 
     % Extract time points from the solution
-    time_points = sol.x;
-    main_trajectory = sol.y;
+    % time_points = sol.x;
+    % main_trajectory = sol.y;
+    % N = length(time_points);
+
+    tsample = linspace(tspan(1),tspan(2),101);
+    time_points = tsample;
+    main_trajectory = deval(sol,tsample);
     N = length(time_points);
 
     % Preallocate storage for logarithm of growth rates
@@ -40,7 +45,7 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
     set(gca,'FontSize', 14, 'FontName', 'Times')
 
     % Loop over each time step
-    for i = 1:N-1
+    for i = 1:N-1 % i = 1:101:N-101
         % Calculate current and next states on main trajectory
         t_current = time_points(i);
         t_next = time_points(i+1);
@@ -62,9 +67,6 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
         % Integrate the perturbed solution to the next time point
         perturbed_sol = dde23(ddefun, delays, @perturbed_history, ...
             [t_current t_next], options);
-        % history_pt = deval(sol, t_current) + perturbation';
-        % perturbed_sol = dde23(ddefun, delays, history_pt, ...
-        %     [t_current t_next], options);
 
         % Plot the perturbation
         plot(perturbed_sol.y(1,1), perturbed_sol.y(2,1), ...
@@ -99,17 +101,5 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
         elseif t >= 0 && t <= sol.x(end)
             h = deval(sol, t) + pt;
         end
-
-        % if t < t_current
-        %     if t < 0
-        %         h = p.history'; % original history
-        %     else
-        %         h = deval(sol, t); % original trajectory
-        %     end
-        % elseif t == t_current
-        %     h = deval(sol, t) + pt; % apply perturbation at t_current
-        % else
-        %     h = deval(sol, t); % let system evolve naturally beyond t_current
-        % end
     end
 end

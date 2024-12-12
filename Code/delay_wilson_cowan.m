@@ -328,17 +328,23 @@ p.theta_v = p.theta_u;
 [p.u, p.v] = calcBias(p, p.theta_u, p.theta_v);
 
 % Define DDE parameters
-p.tspan = [0 30];
+p.tspan = [0 100];
 p.delays = [p.tau1 p.tau2];
 p.history = [0.074 0.077];
 p.options = ddeset('RelTol', 1e-5);
 
 % Specify distance to perturb solutions from main trajectory
-ptbn = 0.0005;
+ptbn = 0.001;
 
 % Calculate maximal lyapunov exponent
 lambda_max = lyapunovExponent(@(t, y, Z) ddefun(t, y, Z, p), p, ptbn);
-display(lambda_max)
+disp(lambda_max)
+
+% Unsure this is correct, sample is running full course and not necessarily
+% matching up with the correct end point on the main trajectory? Would be
+% helpful, for each iteration, to view the specific part of the main
+% trajectory against the full main trajectory at that interval against the
+% sample trajectory at that time interval.
 
 %% --------------------------------------------------------------------- %%
 % ------------------------------- f(x,p) -------------------------------- %
