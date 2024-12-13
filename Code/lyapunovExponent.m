@@ -33,11 +33,6 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
 
     % Initialise figure 10
     figure(10);
-    clf; hold on;
-
-    % Plot main trajectory
-    plot(main_trajectory(1, :), main_trajectory(2, :), ...
-        'k', 'LineWidth', 1.5);
 
     % Format axes
     xlabel("$\mathit{u}$", 'Interpreter', 'latex')
@@ -45,7 +40,8 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
     set(gca,'FontSize', 14, 'FontName', 'Times')
 
     % Loop over each time step
-    for i = 1:N-1 % i = 1:101:N-101
+    for i = 1:N-1
+        clf; hold on;
         % Calculate current and next states on main trajectory
         t_current = time_points(i);
         t_next = time_points(i+1);
@@ -68,7 +64,21 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
         perturbed_sol = dde23(ddefun, delays, @perturbed_history, ...
             [t_current t_next], options);
 
-        % Plot the perturbation
+        % Plot the main trajectory over t_sample range
+        plot(main_trajectory(1,i), main_trajectory(2,i), ...
+            '.k', 'MarkerSize', 6, 'LineWidth', 1);
+        plot(main_trajectory(1, i:i+1), main_trajectory(2, i:i+1), ...
+        'k', 'LineWidth', 1.5);
+
+        % Plot the main trajectory, in full, over t_sample range
+        tsample_full = linspace(i-1,i,161);
+        full_trajectory = deval(sol,tsample_full);
+        plot(full_trajectory(1,1), full_trajectory(2,1), ...
+            '.', 'MarkerSize', 6, 'LineWidth', 1, 'color', '#378c47');
+        plot(full_trajectory(1, :), full_trajectory(2, :), ...
+        'color', '#378c47', 'LineWidth', 1.5);
+
+        % Plot the perturbation over t_sample range
         plot(perturbed_sol.y(1,1), perturbed_sol.y(2,1), ...
             '.', 'MarkerSize', 6, 'LineWidth', 1, 'color', '#f77e1b');
         plot(perturbed_sol.y(1,:), perturbed_sol.y(2,:), ...
@@ -83,13 +93,11 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
 
         % Calculate the log rate of growth
         log_growth_rates(i) = log(norm_growth);
+        disp(log_growth_rates(i))
     end
 
     % Average log(growth rate) over the whole time series
     lambda_max = mean(log_growth_rates);
-
-    % Finalise plot
-    hold off;
 
 %% --------------------------------------------------------------------- %%
 % ------------------------- perturbed_history(t) ------------------------ %
