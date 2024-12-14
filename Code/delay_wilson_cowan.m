@@ -341,7 +341,7 @@ fprintf('Maximal Lyapunov Exponent: %.4f\n', lambda_max)
 %% Calculate Maximum Lyapunov Exponents over parameter space
 % Define Lyaounov exponent calculation parameterssprintf("$\\mathit{u} \\; \\text{(a = %d)}$", a), 'Interpreter', 'latex'
 ptbn = 0.001; % distance to perturb points along main trajectory
-int = 10; % interval to simulate perturbations for
+int = 15; % interval to simulate perturbations for
 
 % Define grid over a, b parameter space
 res = 256; % specify resolution of grid
@@ -355,7 +355,7 @@ p.theta_u = 0.2; p.theta_v = 0.2;
 p.tau1 = 0.1; p.tau2 = 0.1;
 
 % Define DDE parameters
-p.tspan = [0 100];
+p.tspan = [0 60];
 p.delays = [p.tau1 p.tau2];
 p.history = [0.074 0.077];
 p.options = ddeset('RelTol', 1e-5);
@@ -366,8 +366,7 @@ for i = 1:size(p.a_grid, 1)
     for j = 1:size(p.a_grid, 2)
         p.a = p.a_grid(i,j); p.b = p.b_grid(i,j);
         p.c = p.b; p.d = p.a;
-
-        lambda_max(i,j) = lyapunovExponent(@(t, y, Z) ddefun(t, y, Z, p), ...
+        lambda_max(i,j) = lyapunovExponent(@(t,y,Z) ddefun(t,y,Z,p), ...
             p, ptbn, int);
     end
 end

@@ -21,25 +21,13 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn, int)
 
     % Extract time points from this solution
     timepoints = tspan(1):int:tspan(2);
-    main_trajectory = deval(sol,timepoints);
     N = length(timepoints);
 
     % Preallocate storage for logarithm of growth rates
     log_growth_rates = zeros(1, N-1);
 
-    % Initialise figure 10
-    figure(10);
-
     % Loop over each time interval
     for i = 1:N-1
-        clf; hold on;
-
-        % Format axes
-        title(sprintf('a = %.1f, b = %.1f', p.a, p.b))
-        xlabel("$\mathit{u}$", 'Interpreter', 'latex')
-        ylabel("$\mathit{v}$", 'Interpreter', 'latex','rotation',0)
-        set(gca,'FontSize', 14, 'FontName', 'Times')
-
         % Calculate current and next states on main trajectory
         t_current = timepoints(i);
         t_next = timepoints(i+1);
@@ -62,29 +50,6 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn, int)
         % Integrate perturbed solution over interval
         perturbed_sol = dde23(ddefun, delays, @perturbed_history, ...
             [t_current t_next], options);
-
-        % Plot sampled main trajectory over interval
-        plot(main_trajectory(1, i:i+1), main_trajectory(2, i:i+1), ...
-        'k', 'LineWidth', 1.5);
-
-        % Extract original timepoints for interval
-        tsample_full = linspace(timepoints(i),timepoints(i+1),length(sol.x)/N);
-
-        % Plot full main trajectory over interval
-        full_trajectory = deval(sol,tsample_full);
-        plot(full_trajectory(1,1), full_trajectory(2,1), ...
-            '.', 'MarkerSize', 6, 'LineWidth', 1, 'color', '#378c47');
-        plot(full_trajectory(1, :), full_trajectory(2, :), ...
-        'color', '#378c47', 'LineWidth', 1.5);
-
-        % Plot perturbed trajectory over interval
-        plot(perturbed_sol.y(1,1), perturbed_sol.y(2,1), ...
-            '.', 'MarkerSize', 6, 'LineWidth', 1, 'color', '#f77e1b');
-        plot(perturbed_sol.y(1,:), perturbed_sol.y(2,:), ...
-            '-', 'LineWidth', 1, 'color', '#f77e1b');
-
-        % Update figure
-        drawnow;
 
         % Extract perturbed state at t_next
         x_next_perturbed = deval(perturbed_sol, t_next);
