@@ -316,35 +316,27 @@ print(gcf, '../Figures/Figure_9b.png', '-dpng', '-r300');
 % approximation. The size of the perturbation is determined by the
 % numerical parameter ptbn.
 
-% Select Parameters
-p.alpha = 1; p.beta = 60;
-p.a = -6; p.b = 2.5;
-p.c = p.b; p.d = p.a;
-p.tau1 = 0.1; p.tau2 = p.tau1;
+% Define Lyaounov exponent calculation parameters
+point = [-6 2.5]; % provide model parameters [a b]
+ptbn = 0.001; % distance to perturb points along main trajectory
+int = 2; % interval to simulate perturbations for
 
-% Find u* and v* such that θu = 0.2 & θv = 0.2
-p.theta_u = 0.2;
-p.theta_v = p.theta_u;
-[p.u, p.v] = calcBias(p, p.theta_u, p.theta_v);
+% Define model parameters
+p.alpha = 1; p.beta = 60;
+p.a = point(1); p.b = point(2);
+p.c = point(2); p.d = point(1);
+p.theta_u = 0.2; p.theta_v = 0.2;
+p.tau1 = 0.1; p.tau2 = 0.1;
 
 % Define DDE parameters
-p.tspan = [0 100];
+p.tspan = [0 50];
 p.delays = [p.tau1 p.tau2];
 p.history = [0.074 0.077];
 p.options = ddeset('RelTol', 1e-5);
 
-% Specify distance to perturb solutions from main trajectory
-ptbn = 0.001;
-
 % Calculate maximal lyapunov exponent
-lambda_max = lyapunovExponent(@(t, y, Z) ddefun(t, y, Z, p), p, ptbn);
-disp(lambda_max)
-
-% Unsure this is correct, sample is running full course and not necessarily
-% matching up with the correct end point on the main trajectory? Would be
-% helpful, for each iteration, to view the specific part of the main
-% trajectory against the full main trajectory at that interval against the
-% sample trajectory at that time interval.
+lambda_max = lyapunovExponent(@(t, y, Z) ddefun(t, y, Z, p), p, ptbn, int);
+fprintf('Maximal Lyapunov Exponent: %.4f\n', lambda_max)
 
 %% --------------------------------------------------------------------- %%
 % ------------------------------- f(x,p) -------------------------------- %

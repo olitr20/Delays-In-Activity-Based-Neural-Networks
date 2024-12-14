@@ -1,10 +1,11 @@
-function lambda_max = lyapunovExponent(ddefun, p, ptbn)
+function lambda_max = lyapunovExponent(ddefun, p, ptbn, int)
 % lyapunovExponent computes the maximum Lyapunov exponent of a dynamical system.
 % 
 % Inputs:
 %   ddefun - Function handle defining the system of DDEs (dx/dt = f(t, x, x(t-tau))).
 %   p      - Structure containing the parameters: tspan, delays, history, and options.
 %   ptbn   - Size of the perturbation (scalar).
+%   int    - Time interval to simulate perturbations for.
 %
 % Output:
 %   lambda_max - Approximation of the maximum Lyapunov exponent.
@@ -15,18 +16,13 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
     history = p.history;
     options = p.options;
 
-    % Integrate the initial condition over the time span
+    % Integrate initial condition over time span
     sol = dde23(ddefun, delays, history, tspan, options);
 
-    % Extract time points from the solution
-    % time_points = sol.x;
-    % main_trajectory = sol.y;
-    % N = length(time_points);
-
-    tsample = linspace(tspan(1),tspan(2),101);
-    time_points = tsample;
-    main_trajectory = deval(sol,tsample);
-    N = length(time_points);
+    % Extract time points from this solution
+    timepoints = tspan(1):int:tspan(2);
+    main_trajectory = deval(sol,timepoints);
+    N = length(timepoints);
 
     % Preallocate storage for logarithm of growth rates
     log_growth_rates = zeros(1, N-1);
@@ -39,50 +35,55 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
     ylabel("$\mathit{v}$", 'Interpreter', 'latex','rotation',0)
     set(gca,'FontSize', 14, 'FontName', 'Times')
 
-    % Loop over each time step
+    % Loop over each time interval
     for i = 1:N-1
         clf; hold on;
+
         % Calculate current and next states on main trajectory
-        t_current = time_points(i);
-        t_next = time_points(i+1);
+        t_current = timepoints(i);
+        t_next = timepoints(i+1);
         x_current = deval(sol, t_current);
         x_next = deval(sol, t_next);
 
-        % Generate a perturbation vector perpendicular to trajectory
-        tang_vec = (deval(sol, time_points(min(i+1, N))) - x_current) / ...
-            (time_points(min(i+1, N)) - t_current); % compute tangent vec
+        % Generate perturbation vector perpendicular to trajectory
+        tang_vec = (deval(sol, timepoints(min(i+1, N))) - x_current) / ...
+            (timepoints(min(i+1, N)) - t_current); % compute tangent vec
         perp_vec = [-tang_vec(2), tang_vec(1)]; % rotate 90 degrees
         norm_vec = perp_vec / norm(perp_vec); % normalise vec
 
         % Randomise sign of perturbation
+        rng(1) % for reproducibility
         ptbn_r = ptbn * (randi([0, 1]) * 2 - 1);
 
         % Calculate perturbation vector
         perturbation = ptbn_r * norm_vec;
 
-        % Integrate the perturbed solution to the next time point
+        % Integrate perturbed solution over interval
         perturbed_sol = dde23(ddefun, delays, @perturbed_history, ...
             [t_current t_next], options);
 
-        % Plot the main trajectory over t_sample range
-        plot(main_trajectory(1,i), main_trajectory(2,i), ...
-            '.k', 'MarkerSize', 6, 'LineWidth', 1);
+        % Plot sampled main trajectory over interval
         plot(main_trajectory(1, i:i+1), main_trajectory(2, i:i+1), ...
         'k', 'LineWidth', 1.5);
 
-        % Plot the main trajectory, in full, over t_sample range
-        tsample_full = linspace(i-1,i,161);
+        % Extract original timepoints for interval
+        tsample_full = linspace(timepoints(i),timepoints(i+1),length(sol.x)/N);
+
+        % Plot full main trajectory over interval
         full_trajectory = deval(sol,tsample_full);
         plot(full_trajectory(1,1), full_trajectory(2,1), ...
             '.', 'MarkerSize', 6, 'LineWidth', 1, 'color', '#378c47');
         plot(full_trajectory(1, :), full_trajectory(2, :), ...
         'color', '#378c47', 'LineWidth', 1.5);
 
-        % Plot the perturbation over t_sample range
+        % Plot perturbed trajectory over interval
         plot(perturbed_sol.y(1,1), perturbed_sol.y(2,1), ...
             '.', 'MarkerSize', 6, 'LineWidth', 1, 'color', '#f77e1b');
         plot(perturbed_sol.y(1,:), perturbed_sol.y(2,:), ...
             '-', 'LineWidth', 1, 'color', '#f77e1b');
+
+        % Update figure
+        drawnow;
 
         % Extract perturbed state at t_next
         x_next_perturbed = deval(perturbed_sol, t_next);
@@ -93,7 +94,6 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn)
 
         % Calculate the log rate of growth
         log_growth_rates(i) = log(norm_growth);
-        disp(log_growth_rates(i))
     end
 
     % Average log(growth rate) over the whole time series
