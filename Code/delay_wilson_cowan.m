@@ -369,7 +369,7 @@ for i = 1:size(p.a_grid, 1)
         lambda_max(i,j) = lyapunovExponent(@(t,y,Z) ddefun(t,y,Z,p), ...
             p, ptbn, int);
     end
-    fprintf('Completed a = %.3f\n', p.a)
+    fprintf('Completed b = %.2f\n', p.b)
 end
 
 le_img = lambda_max;
