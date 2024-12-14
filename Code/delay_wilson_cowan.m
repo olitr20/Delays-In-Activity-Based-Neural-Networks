@@ -338,6 +338,68 @@ p.options = ddeset('RelTol', 1e-5);
 lambda_max = lyapunovExponent(@(t, y, Z) ddefun(t, y, Z, p), p, ptbn, int);
 fprintf('Maximal Lyapunov Exponent: %.4f\n', lambda_max)
 
+%% Calculate Maximum Lyapunov Exponents over parameter space
+% Define Lyaounov exponent calculation parameterssprintf("$\\mathit{u} \\; \\text{(a = %d)}$", a), 'Interpreter', 'latex'
+ptbn = 0.001; % distance to perturb points along main trajectory
+int = 10; % interval to simulate perturbations for
+
+% Define grid over a, b parameter space
+res = 256; % specify resolution of grid
+p.arange = linspace(-10, 0, res);
+p.brange = linspace(0, 5, res);
+[p.a_grid, p.b_grid] = meshgrid(p.arange, p.brange);
+
+% Define model parameters
+p.alpha = 1; p.beta = 60;
+p.theta_u = 0.2; p.theta_v = 0.2;
+p.tau1 = 0.1; p.tau2 = 0.1;
+
+% Define DDE parameters
+p.tspan = [0 100];
+p.delays = [p.tau1 p.tau2];
+p.history = [0.074 0.077];
+p.options = ddeset('RelTol', 1e-5);
+
+% Calculate maximal lyapunov exponents
+lambda_max = zeros(size(p.a_grid, 1), size(p.a_grid, 2));
+for i = 1:size(p.a_grid, 1)
+    for j = 1:size(p.a_grid, 2)
+        p.a = p.a_grid(i,j); p.b = p.b_grid(i,j);
+        p.c = p.b; p.d = p.a;
+
+        lambda_max(i,j) = lyapunovExponent(@(t, y, Z) ddefun(t, y, Z, p), ...
+            p, ptbn, int);
+    end
+end
+
+le_img = lambda_max;
+le_img(le_img < 0) = 0;
+
+figure(11);
+clf; hold on
+
+imagesc(p.a_grid(1, :), p.b_grid(:, 1), le_img);
+colormap(flipud(gray));
+colorbar;
+
+xlabel("$\mathit{a}$", 'Interpreter', 'latex')
+ylabel("$\mathit{b}$", 'Interpreter', 'latex','rotation',0)
+set(gca,'FontSize', 14, 'FontName', 'Times')
+
+astep = (p.arange(2) - p.arange(1)) / 2;
+bstep = (p.brange(2) - p.brange(1)) / 2;
+
+xlim([-10-astep, 0+astep]);
+ylim([0-bstep, 5+bstep]);
+xticks([-10 -8 -6 -4 -2 0])
+yticks([0 1 2 3 4 5])
+xticklabels({'-10', '-8', '-6', '-4', '-2', '0'});
+yticklabels({'0', '1', '2', '3', '4', '5'});
+
+%%
+% Save figure
+print(gcf, '../Figures/Figure_8.png', '-dpng', '-r300');
+
 %% --------------------------------------------------------------------- %%
 % ------------------------------- f(x,p) -------------------------------- %
     % Define the inverse sigmoid function, for z = u,v

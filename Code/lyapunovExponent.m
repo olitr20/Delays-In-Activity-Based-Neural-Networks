@@ -30,14 +30,15 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn, int)
     % Initialise figure 10
     figure(10);
 
-    % Format axes
-    xlabel("$\mathit{u}$", 'Interpreter', 'latex')
-    ylabel("$\mathit{v}$", 'Interpreter', 'latex','rotation',0)
-    set(gca,'FontSize', 14, 'FontName', 'Times')
-
     % Loop over each time interval
     for i = 1:N-1
         clf; hold on;
+
+        % Format axes
+        title(sprintf('a = %.1f, b = %.1f', p.a, p.b))
+        xlabel("$\mathit{u}$", 'Interpreter', 'latex')
+        ylabel("$\mathit{v}$", 'Interpreter', 'latex','rotation',0)
+        set(gca,'FontSize', 14, 'FontName', 'Times')
 
         % Calculate current and next states on main trajectory
         t_current = timepoints(i);
