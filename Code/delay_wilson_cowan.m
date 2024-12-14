@@ -369,12 +369,13 @@ for i = 1:size(p.a_grid, 1)
         lambda_max(i,j) = lyapunovExponent(@(t,y,Z) ddefun(t,y,Z,p), ...
             p, ptbn, int);
     end
+    fprintf('Completed a = %.3f\n', p.a)
 end
 
 le_img = lambda_max;
 le_img(le_img < 0) = 0;
 
-figure(11);
+figure(10);
 clf; hold on
 
 imagesc(p.a_grid(1, :), p.b_grid(:, 1), le_img);
@@ -395,7 +396,6 @@ yticks([0 1 2 3 4 5])
 xticklabels({'-10', '-8', '-6', '-4', '-2', '0'});
 yticklabels({'0', '1', '2', '3', '4', '5'});
 
-%%
 % Save figure
 print(gcf, '../Figures/Figure_8.png', '-dpng', '-r300');
 
