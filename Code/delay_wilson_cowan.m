@@ -341,10 +341,10 @@ fprintf('Maximal Lyapunov Exponent: %.4f\n', lambda_max)
 %% Calculate Maximum Lyapunov Exponents over parameter space
 % Define Lyaounov exponent calculation parameterssprintf("$\\mathit{u} \\; \\text{(a = %d)}$", a), 'Interpreter', 'latex'
 ptbn = 0.001; % distance to perturb points along main trajectory
-int = 15; % interval to simulate perturbations for
+int = 5; % interval to simulate perturbations for
 
 % Define grid over a, b parameter space
-res = 256; % specify resolution of grid
+res = 512; % specify resolution of grid
 p.arange = linspace(-10, 0, res);
 p.brange = linspace(0, 5, res);
 [p.a_grid, p.b_grid] = meshgrid(p.arange, p.brange);
@@ -398,6 +398,9 @@ yticklabels({'0', '1', '2', '3', '4', '5'});
 
 % Save figure
 print(gcf, '../Figures/Figure_8.png', '-dpng', '-r300');
+
+% Save LE table
+save('lambda_max','lambda_max')
 
 %% --------------------------------------------------------------------- %%
 % ------------------------------- f(x,p) -------------------------------- %
