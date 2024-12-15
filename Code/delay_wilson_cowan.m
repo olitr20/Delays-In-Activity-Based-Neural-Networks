@@ -306,45 +306,15 @@ yticklabels({'', '0.075', '', '0.085', '', '0.095', '', '0.105'});
 % Save figure
 print(gcf, '../Figures/Figure_9b.png', '-dpng', '-r300');
 
-%% Figure 8 Replicate
-% Liapunov exponent attempts to compute the maximum Liapunov exponent of
-% the current simulation. The method is pretty simplistic but works on the
-% examples I have fed it. Given a solution x(t) at a series of points
-% t1, ..., tn I perturb the solution at each time point, integrate the
-% equation to the next time point, and compute the logarithm of the rate of
-% growth. This is averaged over the whole time series to give an
-% approximation. The size of the perturbation is determined by the
-% numerical parameter ptbn.
+%% Calculate Maximum Lyapunov Exponents over parameter space
+% This section takes approx 2.5 hours to complete
 
 % Define Lyaounov exponent calculation parameters
-point = [-6 2.5]; % provide model parameters [a b]
-ptbn = 0.001; % distance to perturb points along main trajectory
-int = 2; % interval to simulate perturbations for
-
-% Define model parameters
-p.alpha = 1; p.beta = 60;
-p.a = point(1); p.b = point(2);
-p.c = point(2); p.d = point(1);
-p.theta_u = 0.2; p.theta_v = 0.2;
-p.tau1 = 0.1; p.tau2 = 0.1;
-
-% Define DDE parameters
-p.tspan = [0 50];
-p.delays = [p.tau1 p.tau2];
-p.history = [0.074 0.077];
-p.options = ddeset('RelTol', 1e-5);
-
-% Calculate maximal lyapunov exponent
-lambda_max = lyapunovExponent(@(t, y, Z) ddefun(t, y, Z, p), p, ptbn, int);
-fprintf('Maximal Lyapunov Exponent: %.4f\n', lambda_max)
-
-%% Calculate Maximum Lyapunov Exponents over parameter space
-% Define Lyaounov exponent calculation parameterssprintf("$\\mathit{u} \\; \\text{(a = %d)}$", a), 'Interpreter', 'latex'
 ptbn = 0.001; % distance to perturb points along main trajectory
 int = 5; % interval to simulate perturbations for
 
 % Define grid over a, b parameter space
-res = 256; % specify resolution of grid
+res = 512; % specify resolution of grid
 p.arange = linspace(-10, 0, res);
 p.brange = linspace(0, 5, res);
 [p.a_grid, p.b_grid] = meshgrid(p.arange, p.brange);
@@ -371,6 +341,7 @@ for i = 1:size(p.a_grid, 1)
     end
     fprintf('Completed b = %.2f\n', p.b)
 end
+clear i j
 
 le_img = lambda_max;
 le_img(le_img < 0) = 0;
@@ -401,6 +372,35 @@ print(gcf, '../Figures/Figure_8.png', '-dpng', '-r300');
 
 % Save LE table
 save('lambda_max','lambda_max')
+
+%% Alternate Figure 8 Preparation
+le_img = lambda_max - 1.2;
+le_img(le_img < 0) = 0;
+le_img = 2 * (le_img - min(le_img(:))) / (max(le_img(:)) - min(le_img(:)));
+
+figure(11);
+clf; hold on
+
+imagesc(p.a_grid(1, :), p.b_grid(:, 1), le_img);
+colormap(flipud(gray));
+colorbar;
+
+xlabel("$\mathit{a}$", 'Interpreter', 'latex')
+ylabel("$\mathit{b}$", 'Interpreter', 'latex','rotation',0)
+set(gca,'FontSize', 14, 'FontName', 'Times')
+
+astep = (p.arange(2) - p.arange(1)) / 2;
+bstep = (p.brange(2) - p.brange(1)) / 2;
+
+xlim([-10-astep, 0+astep]);
+ylim([0-bstep, 5+bstep]);
+xticks([-10 -8 -6 -4 -2 0])
+yticks([0 1 2 3 4 5])
+xticklabels({'-10', '-8', '-6', '-4', '-2', '0'});
+yticklabels({'0', '1', '2', '3', '4', '5'});
+
+% Save figure
+print(gcf, '../Figures/Figure_8a.png', '-dpng', '-r300');
 
 %% --------------------------------------------------------------------- %%
 % ------------------------------- f(x,p) -------------------------------- %
