@@ -332,16 +332,22 @@ p.options = ddeset('RelTol', 1e-5);
 
 % Calculate maximal lyapunov exponents
 lambda_max = zeros(size(p.a_grid, 1), size(p.a_grid, 2));
+t_full = tic;
 for i = 1:size(p.a_grid, 1)
+    t_iter = tic;
     for j = 1:size(p.a_grid, 2)
         p.a = p.a_grid(i,j); p.b = p.b_grid(i,j);
         p.c = p.b; p.d = p.a;
         lambda_max(i,j) = lyapunovExponent(@(t,y,Z) ddefun(t,y,Z,p), ...
             p, ptbn, int);
     end
-    fprintf('Completed b = %.2f\n', p.b)
+    elapsed_iter = toc(t_iter);
+    fprintf('Completed b = %.2f, elapsed time: %.1f seconds\n', p.b, elapsed_iter)
 end
+elapsed_full = toc(t_full);
+fprintf('Total elasped time: %.1f seconds\n', elapsed_full)
 clear i j
+clear t_full t_iter elapsed_iter elapsed_full
 
 le_img = lambda_max;
 le_img(le_img < 0) = 0;
