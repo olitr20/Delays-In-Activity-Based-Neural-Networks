@@ -344,7 +344,7 @@ ptbn = 0.001; % distance to perturb points along main trajectory
 int = 5; % interval to simulate perturbations for
 
 % Define grid over a, b parameter space
-res = 512; % specify resolution of grid
+res = 256; % specify resolution of grid
 p.arange = linspace(-10, 0, res);
 p.brange = linspace(0, 5, res);
 [p.a_grid, p.b_grid] = meshgrid(p.arange, p.brange);
