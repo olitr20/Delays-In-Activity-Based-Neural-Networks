@@ -380,9 +380,9 @@ print(gcf, '../Figures/Figure_8.png', '-dpng', '-r300');
 save('lambda_max','lambda_max')
 
 %% Alternate Figure 8 Preparation
-le_img = lambda_max - 1.2;
-le_img(le_img < 0) = 0;
-le_img = 2 * (le_img - min(le_img(:))) / (max(le_img(:)) - min(le_img(:)));
+le_img = lambda_max;% - 1.2;
+% le_img(le_img < 0) = 0;
+% le_img = 2 * (le_img - min(le_img(:))) / (max(le_img(:)) - min(le_img(:)));
 
 figure(11);
 clf; hold on
