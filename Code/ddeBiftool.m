@@ -1,5 +1,5 @@
 %% DDE-BIFTOOL - Wilson-Cowan Network with Delays
-%
+% Could convert this into a function to be called from delay_wilson_cowan.m
 
 clearvars; clc
 format compact
@@ -123,6 +123,110 @@ plot(x2s)
 
 % saddle nodes occur when there is one 0 eigenvalue?
 
+% Find the first saddle-node bifurcation point
+ind_sn = 88;
+
+% Convert this point to a saddle-node point
+sn = p_tofold(funcs, branch1.point(ind_sn));
+
+% Get saddle-node calculation method parameters
+method = df_mthod(funcs, 'fold');
+method.stability.minimal_real_part = -1;
+
+% Correct saddle-node point
+[sn, success] = p_correc(funcs, sn, ind_theta_u, [], method.point);
+if success == 1
+    disp('Initial First Saddle-Node Point Correction Successful')
+end
+
+% Compute stability of saddle-node point
+sn.stability = p_stabil(funcs, sn, method.stability);
+
+%% Initialise and Continue Saddle-Node Bifurcation
+% Get an empty branch with theta_u and tau as free parameters
+branch2 = df_brnch(funcs, [ind_theta_u, ind_taus], 'fold');
+
+% Set bounds for continuation parameters
+branch2.parameter.min_bound(1:2,:) = [[ind_theta_u 0.4]' [ind_taus 0]']';
+branch2.parameter.max_bound(1:2,:) = [[ind_theta_u 1]' [ind_taus 0.5]']';
+branch2.parameter.max_step(1:2,:) = [[ind_theta_u 0.005]' [ind_taus 0.005]']';
+
+% Use saddle-node point as first saddle-node branch point
+branch2.point = sn;
+
+% Perturb saddle-node point by 0.0001 in tau
+sn.parameter(ind_taus) = sn.parameter(ind_taus) + 0.0001;
+
+% Correct saddle-node point in theta_u and recompute stability
+[sn, success] = p_correc(funcs, sn, ind_theta_u, [], method.point);
+if success == 1
+    disp('Perturbed First Saddle-Node Point Correction Successful')
+end
+
+% Use perturbed hopf point as second hopf branch point
+branch2.point(2) = sn;
+
+% Initialise figure 4
+figure(4); clf;
+
+% Continue hopf branch in both directions
+branch2 = br_contn(funcs, branch2, 500);
+branch2 = br_rvers(branch2);
+branch2 = br_contn(funcs, branch2, 500);
+
+% Format figure 4
+xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
+ylabel('\tau', 'Rotation', 0);
+
+%% Find and Continue Second Saddle-Node Bifurcation
+% Find the second saddle-node bifurcation point
+ind_sn = 141;
+
+% Convert this point to a saddle-node point
+sn = p_tofold(funcs, branch1.point(ind_sn));
+
+% Correct saddle-node point
+[sn, success] = p_correc(funcs, sn, ind_theta_u, [], method.point);
+if success == 1
+    disp('Initial Second Saddle-Node Point Correction Successful')
+end
+
+% Compute stability of saddle-node point
+sn.stability = p_stabil(funcs, sn, method.stability);
+
+% Get an empty branch with theta_u and tau as free parameters
+branch3 = df_brnch(funcs, [ind_theta_u, ind_taus], 'fold');
+
+% Set bounds for continuation parameters
+branch3.parameter.min_bound(1:2,:) = [[ind_theta_u 0.4]' [ind_taus 0]']';
+branch3.parameter.max_bound(1:2,:) = [[ind_theta_u 1]' [ind_taus 0.5]']';
+branch3.parameter.max_step(1:2,:) = [[ind_theta_u 0.005]' [ind_taus 0.005]']';
+
+% Use saddle-node point as first saddle-node branch point
+branch3.point = sn;
+
+% Perturb saddle-node point by 0.0001 in tau
+sn.parameter(ind_taus) = sn.parameter(ind_taus) + 0.0001;
+
+% Correct saddle-node point in theta_u and recompute stability
+[sn, success] = p_correc(funcs, sn, ind_theta_u, [], method.point);
+if success == 1
+    disp('Perturbed Second Saddle-Node Point Correction Successful')
+end
+
+% Use perturbed hopf point as second hopf branch point
+branch3.point(2) = sn;
+
+% Continue hopf branch in both directions
+branch3 = br_contn(funcs, branch3, 500);
+branch3 = br_rvers(branch3);
+branch3 = br_contn(funcs, branch3, 500);
+
+% Format figure 4
+xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
+ylabel('\tau', 'Rotation', 0);
+ylim([0 0.5])
+
 %% Locate the First Hopf Point
 % Where eigenvalue curves in the stability plot (figure 2) cross the zero 
 % line, hopf bifurcations occur. To find this hopf point, select the last
@@ -138,7 +242,7 @@ ind_hopf = find(arrayfun(@(x) real(x.stability.l0(1)) > 0, ...
 hopf = p_tohopf(funcs, branch1.point(ind_hopf));
 
 % Get hopf calculation method parameters
-method = df_mthod(funcs, 'hopf'); % flag_newhheur omitted
+method = df_mthod(funcs, 'hopf');
 method.stability.minimal_real_part = -1;
 
 % Correct hopf point
@@ -159,15 +263,15 @@ hopf.stability = p_stabil(funcs, hopf, method.stability);
 % intervals and maximal step sizes are provided.
 
 % Get an empty branch with theta_u and tau as free parameters
-branch2 = df_brnch(funcs, [ind_theta_u, ind_taus], 'hopf');
+branch4 = df_brnch(funcs, [ind_theta_u, ind_taus], 'hopf');
 
 % Set bounds for continuation parameters
-branch2.parameter.min_bound(1:2,:) = [[ind_theta_u 0.4]' [ind_taus 0]']';
-branch2.parameter.max_bound(1:2,:) = [[ind_theta_u 1]' [ind_taus 0.5]']';
-branch2.parameter.max_step(1:2,:) = [[ind_theta_u 0.005]' [ind_taus 0.005]']';
+branch4.parameter.min_bound(1:2,:) = [[ind_theta_u 0.4]' [ind_taus 0]']';
+branch4.parameter.max_bound(1:2,:) = [[ind_theta_u 1]' [ind_taus 0.5]']';
+branch4.parameter.max_step(1:2,:) = [[ind_theta_u 0.005]' [ind_taus 0.005]']';
 
 % Use hopf point as first hopf branch point
-branch2.point = hopf;
+branch4.point = hopf;
 
 % Perturb hopf point by 0.0001 in theta_u
 hopf.parameter(ind_theta_u) = hopf.parameter(ind_theta_u) - 0.0001;
@@ -179,17 +283,17 @@ if success == 1
 end
 
 % Use perturbed hopf point as second hopf branch point
-branch2.point(2) = hopf;
+branch4.point(2) = hopf;
 
-% Initialise figure 4
-figure(4); clf;
+% Initialise figure 5
+figure(5); clf;
 
 % Continue hopf branch in both directions
-branch2 = br_contn(funcs, branch2, 500);
-branch2 = br_rvers(branch2);
-branch2 = br_contn(funcs, branch2, 500);
+branch4 = br_contn(funcs, branch4, 500);
+branch4 = br_rvers(branch4);
+branch4 = br_contn(funcs, branch4, 500);
 
-% Format figure 4
+% Format figure 5
 xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
 ylabel('\tau', 'Rotation', 0);
 
@@ -213,48 +317,34 @@ if success == 1
 end
 
 % Get an empty branch with theta_u as a free parameter
-branch3=df_brnch(funcs,ind_theta_u,'psol');
+branch5=df_brnch(funcs,ind_theta_u,'psol');
 
 % Set bounds for continuation parameter
-branch3.parameter.min_bound(1,:) = [ind_theta_u 0];
-branch3.parameter.max_bound(1,:) = [ind_theta_u 0.84];
-branch3.parameter.max_step(1,:) = [ind_theta_u 0.005];
+branch5.parameter.min_bound(1,:) = [ind_theta_u 0];
+branch5.parameter.max_bound(1,:) = [ind_theta_u 0.85];
+branch5.parameter.max_step(1,:) = [ind_theta_u 0.005];
 
 % Make degenerate periodic solution with amplitude zero at hopf point
 deg_psol = p_topsol(funcs, first_hopf, 0, degree, intervals);
 
 % Use deg_psol and psol as first two points on branch
 deg_psol.mesh = []; % clear the mesh field to save memory and avoid adaptive mesh selection
-branch3.point = deg_psol;
+branch5.point = deg_psol;
 psol.mesh = [];
-branch3.point(2) = psol;
-
-% Initialise figure 5
-figure(5); clf;
-
-% Continue periodic solutions branch, plotting amplitude
-branch3 = br_contn(funcs, branch3, 500);
-
-% Format figure 5
-xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
-ylabel('Amplitude');
+branch5.point(2) = psol;
 
 % Initialise figure 6
 figure(6); clf;
 
-% Plot amplitude along the branch
-[xm, ym] = df_measr(0, branch3); 
-ym.field = 'period'; ym.col = 1;
-br_plot(branch3,xm,ym,'b');
-axis([0.545 0.855 0.735 0.775]);
+% Continue periodic solutions branch, plotting amplitude
+branch5 = br_contn(funcs, branch5, 500);
 
 % Format figure 6
 xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
-ylabel('Period');
+ylabel('Amplitude');
+xlim([0.55 0.85]);
 
 %% Initialise Folds of Periodic Orbits
-% something going wrong here %
-
 % Speed up computations by vectorisation
 neuron_sys_rhs = @(xx,par) [...
     -xx(1,1,:)+1/(1+exp(-par(2)*(par(7)+par(3)*xx(1,2,:)+par(4)*xx(2,2,:))));....
@@ -264,31 +354,70 @@ vfuncs=set_funcs(...
     'sys_tau', @() 9,...
     'x_vectorized', true);
 
-% Find initial guess
-[~, indmax1] = max(arrayfun(@(x) x.parameter(ind_theta_u), branch3.point));
-[~, indmax2] = min(arrayfun(@(x) x.parameter(ind_theta_u), branch3.point));
+% Extract amplitude along the branch 
+[~, ym] = df_measr(0, branch5);
+ym.field = 'profile'; ym.row = 1; ym.col = 'ampl';
+amplitudes = br_measr(branch5,ym);
+val_ind = find(amplitudes > 0.1); % restrict branch to ampl > 0.1
 
-% Initialise branch and set up extended system
-branch3.method.point.newton_max_iterations = 16;
-[foldfuncs, branch4] = SetupPOfold(vfuncs, branch3, indmax1, ...
+% Find the maximum theta_u where amplitudes > 0.1
+[~, local_indmax] = max(arrayfun(@(x) x.parameter(ind_theta_u), ...
+    branch5.point(val_ind)));
+indmax = val_ind(local_indmax);
+
+% Find the maximum theta_u where amplitudes > 0.1
+[~, local_indmin] = min(arrayfun(@(x) x.parameter(ind_theta_u), ...
+    branch5.point(val_ind)));
+indmin = val_ind(local_indmin);
+
+%% Initialise and Continue First Fold of Periodic Orbits
+psol = branch5.point(indmax:indmax+1);
+intervals = 40; degree = 4;
+psol = arrayfun(@(p) p_remesh(p, degree, intervals), psol); % refine
+method.point.adapt_mesh_after_correct = 1;
+method.point.newton_max_iterations = 7;
+method.point.newton_nmon_iterations = 2;
+psol = arrayfun(@(p) p_correc(funcs, p, [], [], method.point), psol); %correct
+
+% Copy branch 5 and start at max theta_u point
+branch6 = branch5;
+branch6.point = psol;
+branch6.method = method;
+
+% Initialise and set up branch
+branch6.method.point.newton_max_iterations = 16;
+[foldfuncs, branch6] = SetupPOfold(vfuncs, branch6, 1, ...
     'contpar', [ind_theta_u, ind_taus], 'dir', ind_taus, ...
     'print_residual_info', 1, 'step', 0.01, 'plot_measure', [],...
-    'min_bound', [ind_theta_u,0.572535; ind_taus,0.102212], ...
-    'max_bound', [ind_theta_u,0.827663; ind_taus,0.5],...
+    'min_bound', [ind_theta_u,0.572536; ind_taus,0.102213], ...
+    'max_bound', [ind_theta_u,0.827662; ind_taus,0.5],...
     'max_step', [ind_theta_u,0.01; ind_taus,0.01]);
 
-%% Continue Folds of Periodic Orbits
 % Initialise figure 7
 figure(7); clf;
 
 % Continue one fold
-branch4.method.point.print_residual_info = 0;
-branch4 = br_contn(foldfuncs, branch4, 100);
-branch4 = br_rvers(branch4);
-branch4 = br_contn(foldfuncs, branch4, 100);
+branch6.method.point.print_residual_info = 0;
+branch6 = br_contn(foldfuncs, branch6, 100);
+branch6 = br_rvers(branch6);
+branch6 = br_contn(foldfuncs, branch6, 100);
+
+%% Initialise and Continue Second Fold of Periodic Orbits
+psol = branch5.point(indmin-1:indmin);
+intervals = 40; degree = 4;
+psol = arrayfun(@(p) p_remesh(p, degree, intervals), psol); % refine
+method.point.adapt_mesh_after_correct = 1;
+method.point.newton_max_iterations = 7;
+method.point.newton_nmon_iterations = 2;
+psol = arrayfun(@(p) p_correc(funcs, p, [], [], method.point), psol); %correct
+
+% Copy branch 5 and start at max theta_u point
+branch7 = branch5;
+branch7.point = psol;
+branch7.method = method;
 
 % Initilaise and continue second periodic orbit branch
-[foldfuncs, branch5] = SetupPOfold(vfuncs, branch3, indmax2, ...
+[foldfuncs, branch7] = SetupPOfold(vfuncs, branch7, 1, ...
     'contpar', [ind_theta_u, ind_taus], 'dir', ind_taus, ...
     'print_residual_info', 1, 'step', 0.01, 'plot_measure', [],...
     'min_bound', [ind_theta_u,0.4; ind_taus,0.0], ...
@@ -296,11 +425,71 @@ branch4 = br_contn(foldfuncs, branch4, 100);
     'max_step', [ind_theta_u,0.01; ind_taus,0.01]);
 
 % Continue second fold
-branch5.method.point.print_residual_info = 0;
-branch5 = br_contn(foldfuncs, branch5, 100);
-branch5 = br_rvers(branch5);
-branch5 = br_contn(foldfuncs, branch5, 100);
+branch7.method.point.print_residual_info = 0;
+branch7 = br_contn(foldfuncs, branch7, 100);
+branch7 = br_rvers(branch7);
+branch7 = br_contn(foldfuncs, branch7, 100);
 
 % Format figure 7
 xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
 ylabel('\tau');
+
+%% Construct Final Figure
+% Get deafult plotting measures: x = theta_u, y = tau
+[xm, ym] = df_measr(0, branch2);
+
+% Extract data from branches
+% % potentially use deval to evaluate each branch at a grid of points to
+% % even out the lines.
+
+    % First saddle-node bifurcation
+    sn_bifn_1_x = br_measr(branch2, xm);
+    sn_bifn_1_y = br_measr(branch2, ym);
+
+    % Second saddle-node bifurcation
+    sn_bifn_2_x = br_measr(branch3, xm);
+    sn_bifn_2_y = br_measr(branch3, ym);
+
+    % Hopf bifurcation
+    hopf_bifn_x = br_measr(branch4, xm);
+    hopf_bifn_y = br_measr(branch4, ym);
+
+    % First saddle-node of periodic orbits
+    snpo_bifn_1_x = br_measr(branch6, xm);
+    snpo_bifn_1_x = linspace(max(snpo_bifn_1_x), min(snpo_bifn_1_x), 19);
+    snpo_bifn_1_x = snpo_bifn_1_x(1:12);
+    snpo_bifn_1_y = br_measr(branch6, ym);
+    snpo_bifn_1_y = linspace(min(snpo_bifn_1_y), max(snpo_bifn_1_y), 19);
+    snpo_bifn_1_y = snpo_bifn_1_y(1:12);
+
+    % Second saddle-node of periodic orbits
+    snpo_bifn_2_x = br_measr(branch7, xm);
+    snpo_bifn_2_x = linspace(min(snpo_bifn_2_x), max(snpo_bifn_2_x), 19);
+    snpo_bifn_2_x = snpo_bifn_2_x(1:12);
+    snpo_bifn_2_y = br_measr(branch7, ym);
+    snpo_bifn_2_y = linspace(min(snpo_bifn_2_y), max(snpo_bifn_2_y), 19);
+    snpo_bifn_2_y = snpo_bifn_2_y(1:12);
+
+% Initialise figure 8
+figure(8); clf;
+hold on
+
+% Plot bifurcations
+plot(sn_bifn_1_x, sn_bifn_1_y, 'k', 'linewidth', 1)
+plot(sn_bifn_2_x, sn_bifn_2_y, 'k', 'linewidth', 1)
+dashline(hopf_bifn_x, hopf_bifn_y, ...
+    1.5, 1, 1.5, 1, 'color', 'k', 'linewidth', 1)
+plot(snpo_bifn_1_x, snpo_bifn_1_y, 'k-o', 'markersize', 4, 'linewidth', 1)
+plot(snpo_bifn_2_x, snpo_bifn_2_y, 'k-o', 'markersize', 4, 'linewidth', 1)
+
+% Format figure 8
+set(gca,'FontSize', 14, 'FontName', 'Times')
+xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex')
+ylabel('\tau', 'rotation', 0);
+xlim([0.4, 1]);
+ylim([0, 0.5]);
+xticks([0.4 0.5 0.6 0.7 0.8 0.9 1])
+xticklabels({'0.4','0.5','0.6','0.7', '0.8', '0.9', '1.0'})
+yticks([0 0.1 0.2 0.3 0.4 0.5])
+yticklabels({'0', '0.1', '0.2', '0.3', '0.5', '0.5'});
+
