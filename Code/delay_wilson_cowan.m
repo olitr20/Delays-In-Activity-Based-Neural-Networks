@@ -218,6 +218,38 @@ annotation('textbox',[0.15 0.21 0.0446 0.0536],'String','$\mathit{v}$',...
 % Save figure
 print(gcf, '../Figures/Figure_3.png', '-dpng', '-r300');
 
+%% Figure 6 Replicate
+% Define model parameters
+p.alpha = 1; p.beta = 60;
+p.a = -1; p.b = -0.4;
+p.c = -1; p.d = 0;
+p.theta_u = 0.7; p.theta_v = 0.5;
+p.tau_1 = 0.2; p.tau_2 = p.tau_1;
+
+bifn = ddeBiftoolMain(p);
+
+% Initialise figure 6
+figure(6); clf;
+hold on
+
+% Plot bifurcations
+plot(bifn.sn1.x, bifn.sn1.y, 'k', 'linewidth', 1) % first saddle-node
+plot(bifn.sn2.x, bifn.sn2.y, 'k', 'linewidth', 1) % second saddle-node
+plot(bifn.hopf.x, bifn.hopf.y, 'k--', 'linewidth', 1) % hopf
+plot(bifn.snpo1.x, bifn.snpo1.y, 'k-o', 'markersize', 4, 'linewidth', 1) % first saddle-node of periodic orbits
+plot(bifn.snpo2.x, bifn.snpo2.y, 'k-o', 'markersize', 4, 'linewidth', 1) % second saddle-node of periodic orbits
+
+% Format figure 8
+set(gca,'FontSize', 14, 'FontName', 'Times')
+xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex')
+ylabel('\tau', 'rotation', 0);
+xlim([0.4, 1]);
+ylim([0, 0.5]);
+xticks([0.4 0.5 0.6 0.7 0.8 0.9 1])
+xticklabels({'0.4','0.5','0.6','0.7', '0.8', '0.9', '1.0'})
+yticks([0 0.1 0.2 0.3 0.4 0.5])
+yticklabels({'0', '0.1', '0.2', '0.3', '0.5', '0.5'});
+
 %% Figure 9a Replicate
 % Select Parameters
 p.alpha = 1; p.beta = 60;
