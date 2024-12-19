@@ -1,33 +1,27 @@
 %% DDE-BIFTOOL - Wilson-Cowan Network with Delays
-%
 
-clearvars; clc
-format compact
+function [stst, po] = ddeBiftoolSection(p)
+
 addpath('ddebiftool/');
 addpath('ddebiftool_extra_psol/');
 addpath('ddebiftool_utilities/');
+
 %#ok<*ASGLU,*NOPTS,*NASGU>
 
-%% Definition of User Functions
+%% Define Model
 % Right-hand side
-neuron_sys_rhs=@(xx,par)[...
-    -xx(1,1)+1/(1+exp(-par(2)*(par(7)+par(3)*xx(1,2)+par(4)*xx(2,2))));....
-    par(1)*(-xx(2,1)+1/(1+exp(-par(2)*(par(8)+par(5)*xx(1,2)+par(6)*xx(2,2)))))];
+sys_rhs = @(xx, par) [ ...
+    -xx(1,1) + 1 / (1 + exp(-par(2) * (par(7) + par(3) * xx(1,2) + par(4) * xx(2,2)))); ...
+    par(1) * (-xx(2,1) + 1 / (1 + exp(-par(2) * (par(8) + par(5) * xx(1,2) + par(6) * xx(2,2)))))];
 
 % Delays and Continuation Parameters
-neuron_tau = @() 9;
+sys_tau = @() 9;
 ind_theta_u = 7;
 ind_taus = 9;
 
-funcs=set_funcs(...
-    'sys_rhs', neuron_sys_rhs,...
-    'sys_tau', @() 9);
-
-% Define model parameters
-p.alpha = 1; p.beta = 60;
-p.a = -1; p.b = -0.4; p.c = -1; p.d = 0;
-p.theta_u = 0.7; p.theta_v = 0.5;
-p.tau_1 = 0.2; p.tau_2 = p.tau_1;
+funcs=set_funcs( ...
+    'sys_rhs', sys_rhs, ...
+    'sys_tau', sys_tau);
 
 % Define continuation parameters
 if p.tau_1 == 0.09; min_theta_u = 0.61; max_theta_u = 1;
@@ -37,17 +31,13 @@ else; min_theta_u = 0.4; max_theta_u = 1;
 end
 
 %% Initial Guess for Steady State
+% Initialise steady state point
 stst.kind='stst';
 stst.parameter=[p.alpha, p.beta, p.a, p.b, p.c, p.d, ...
     p.theta_u, p.theta_v, p.tau_1];
+stst.x=[0.698598941633828;0]; % Extract [u, v] from odeSim endpoint
 
-% stst.x=[0.103596478880629;1]; % theta_u = 0.5
-% stst.x=[0.599328884047436;0]; % theta_u = 0.6
-stst.x=[0.698598941633828;0]; % theta_u = 0.7
-% stst.x=[0.797713228634354;0]; % theta_u = 0.8
-% stst.x=[0.896403521119372;0]; % theta_u = 0.9
-
-method = df_mthod(funcs, 'stst'); % flag_newhheur omitted
+method = df_mthod(funcs, 'stst');
 method.stability.minimal_real_part = -2;
 
 % Correct steady state point
@@ -56,20 +46,20 @@ if success == 1
     disp('Initial Steady State Correction Successful')
 end
 
-% Compute its stability
+% Compute point stability
 stst.stability = p_stabil(funcs, stst, method.stability);
 
 %% Initialize branch of steady state
 % Get an empty branch with theta_u as a free parameter
-branch8 = df_brnch(funcs, ind_theta_u, 'stst');
+branch1 = df_brnch(funcs, ind_theta_u, 'stst');
 
 % Set bounds for continuation parameter
-branch8.parameter.min_bound(1,:) = [ind_theta_u 0.4];
-branch8.parameter.max_bound(1,:) = [ind_theta_u 1];
-branch8.parameter.max_step(1,:) = [ind_theta_u 0.005];
+branch1.parameter.min_bound(1,:) = [ind_theta_u 0.4];
+branch1.parameter.max_bound(1,:) = [ind_theta_u 1];
+branch1.parameter.max_step(1,:) = [ind_theta_u 0.005];
 
 % Use steady state point as first steady state branch point
-branch8.point = stst;
+branch1.point = stst;
 
 %% Continue branch of steady state in theta_u
 % Perturb steady state point by 0.01 in theta_u
@@ -82,52 +72,25 @@ if success == 1
 end
 
 % Use new steady state point as second steady state branch point
-branch8.point(2) = stst;
-branch8.method.continuation.plot = 1;
-
-% Initialise figure 1
-figure(1); clf;
+branch1.point(2) = stst;
 
 % Continue steady state branch in both directions
-branch8 = br_contn(funcs, branch8, 200);
-branch8 = br_rvers(branch8);
-branch8 = br_contn(funcs, branch8, 200);
+branch1.method.continuation.plot = 0; % hide continuation plot
+branch1 = br_contn(funcs, branch1, 200);
+branch1 = br_rvers(branch1);
+branch1 = br_contn(funcs, branch1, 200);
 
-% Format figure 1
-xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
-ylabel("$\mathit{u}$", 'Rotation', 0, 'Interpreter', 'latex');
-xlim([0.4 1]);
-ylim([0 1]);
-
-%% Compute Stability of this Steady State Branch
-% Calculate stability of every point along branch
-branch8.method.stability.minimal_real_part = -2;
-branch8 = br_stabl(funcs, branch8, 0, 0);
-
-% Obtain suitable scalar measures to plot stability along branch
-[xm, ym] = df_measr(1, branch8);
-ym.subfield = 'l0';
-
-% Initialise figure 2
-figure(2); clf;
-
-% Plot stability along branch
-br_plot(branch8, [], ym, 'b');
-br_plot(branch8, [], ym, 'b.');
-plot([0 length(branch8.point)], [0 0], '-.');
-
-% Format figure 2
-xlabel('Point Number Along Branch');
-ylabel('\Re(\lambda)', 'Rotation', 0);
-xlim([0 length(branch8.point)]);
+% Calculate stability along branch
+branch1.method.stability.minimal_real_part = -2;
+branch1 = br_stabl(funcs, branch1, 0, 0);
 
 %% Locate the First Hopf Point
 % Find the hopf bifurcation point
 ind_hopf = find(arrayfun(@(x) real(x.stability.l0(1)) > 0, ...
-    branch8.point), 1, 'last');
+    branch1.point), 1, 'last');
 
 % Convert this point to a hopf point
-hopf = p_tohopf(funcs, branch8.point(ind_hopf));
+hopf = p_tohopf(funcs, branch1.point(ind_hopf));
 
 % Get hopf calculation method parameters
 method = df_mthod(funcs, 'hopf');
@@ -141,12 +104,6 @@ end
 first_hopf = hopf; % store hopf point for later use
 
 %% Initialise and Continue Periodic Orbits
-% Using the first Hopf point, construct a small-amplitude (1e-2) periodic
-% solution on an equidistant mesh of 18 intervals with piecewise polynomial
-% degree 3. The steplength condition (returned by p_topsol) ensures the
-% branch switch from the Hopf to the periodic solution as it avoids
-% convergence of the amplitude to zero during corrections.
-
 % Construct small amplitude oscillation
 intervals = 18;
 degree = 3;
@@ -160,144 +117,120 @@ if success == 1
 end
 
 % Get an empty branch with theta_u as a free parameter
-branch9=df_brnch(funcs,ind_theta_u,'psol');
+branch2 = df_brnch(funcs, ind_theta_u, 'psol');
 
 % Set bounds for continuation parameter
-branch9.parameter.min_bound(1,:) = [ind_theta_u min_theta_u];
-branch9.parameter.max_bound(1,:) = [ind_theta_u max_theta_u];
-branch9.parameter.max_step(1,:) = [ind_theta_u 0.005];
+branch2.parameter.min_bound(1,:) = [ind_theta_u min_theta_u];
+branch2.parameter.max_bound(1,:) = [ind_theta_u max_theta_u];
+branch2.parameter.max_step(1,:) = [ind_theta_u 0.005];
 
 % Make degenerate periodic solution with amplitude zero at hopf point
 deg_psol = p_topsol(funcs, first_hopf, 0, degree, intervals);
 
 % Use deg_psol and psol as first two points on branch
 deg_psol.mesh = []; % clear the mesh field to save memory and avoid adaptive mesh selection
-branch9.point = deg_psol;
+branch2.point = deg_psol;
 psol.mesh = [];
-branch9.point(2) = psol;
+branch2.point(2) = psol;
 
-% Initialise figure 3
-figure(3); clf;
+% Continue periodic solutions branch
+branch2.method.continuation.plot = 0; % hide continuation plot
+branch2 = br_contn(funcs, branch2, 200);
 
-% Continue periodic solutions branch, plotting amplitude
-branch9 = br_contn(funcs, branch9, 200);
+%% Extract max u and theta_u along the branch
+% Get default measures for branch 2
+[xm, ym] = df_measr(0, branch2);
 
-% Format figure 3
-xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
-ylabel('Amplitude');
-
-%% Extract max u and theta_u along the branch 
-[xm, ym] = df_measr(0, branch9);
+% Update measures
 ym.field = 'profile'; ym.row = 1; ym.col = 'all';
-po_y = br_measr(branch9,ym);
-po_y = max(po_y, [], 2);
-po_x = br_measr(branch9,xm);
 
-% Initialise figure 4
-figure(1);
-hold on
+% Extract periodic orbits branch
+po_x = br_measr(branch2,xm); % theta_us
+po_y = br_measr(branch2,ym); % us
+po_y = max(po_y, [], 2); % find maximum u
 
-plot(po_x, po_y, 'r-')
-plot(po_x, po_y, 'r.')
-
-%% Compute Stability of this Periodic Orbit Branch
-% Calculate stability of every point along branch
-branch9.method.stability.minimal_real_part = -2;
-branch9 = br_stabl(funcs, branch9, 0, 0);
-
-% Obtain suitable scalar measures to plot stability along branch
-[xm, ym] = df_measr(1, branch9);
-ym.subfield = 'mu'; ym.row = 1;
-
-% Initialise figure 4
-figure(4); clf;
-
-% Plot stability along branch
-br_plot(branch9, xm, ym, 'b');
-br_plot(branch9, xm, ym, 'b.');
-% plot([0 length(branch8.point)], [0 0], '-.');
-
-% Format figure 4
-xlabel('Point Number Along Branch');
-ylabel('\Re(\lambda)', 'Rotation', 0);
+% Calculate stability along branch
+branch2.method.stability.minimal_real_part = -2;
+branch2 = br_stabl(funcs, branch2, 0, 0);
 
 %% Construct Final Figure
-% Initialise figure 5
-figure(5); clf
-hold on
+% Get default measures for branch 1
+[xm, ym] = df_measr(0, branch1);
 
-[xm, ym] = df_measr(0, branch8);
-stst_x = br_measr(branch8, xm);
-stst_y = br_measr(branch8, ym);
+% Extract steady states branch
+stst_x = br_measr(branch1, xm);
+stst_y = br_measr(branch1, ym);
 
+% Locate first hopf bifurcation
 ind_hopf_1 = find(arrayfun(@(x) real(x.stability.l0(1)) > 0, ...
-    branch8.point), 1, 'first');
+    branch1.point), 1, 'first');
+
+% Locate second hopf bifurcation
 ind_hopf_2 = find(arrayfun(@(x) real(x.stability.l0(1)) > 0, ...
-    branch8.point), 1, 'last');
-if isempty(ind_hopf_1)
-    ind_hopf_1 = length(branch8.point);
-end
+    branch1.point), 1, 'last');
 
-stst_x_stable_1 = stst_x(1:ind_hopf_1);
-stst_y_stable_1 = stst_y(1:ind_hopf_1);
-stst_x_unstable = stst_x(ind_hopf_1:ind_hopf_2);
-stst_y_unstable = stst_y(ind_hopf_1:ind_hopf_2);
-stst_x_stable_2 = stst_x(ind_hopf_2:end);
-stst_y_stable_2 = stst_y(ind_hopf_2:end);
+% if isempty(ind_hopf_1)
+%     ind_hopf_1 = length(branch1.point);
+% end
 
-plot(stst_x_stable_1, stst_y_stable_1, 'k-')
-plot(stst_x_unstable, stst_y_unstable, 'k--')
-plot(stst_x_stable_2, stst_y_stable_2, 'k-')
+% Extract first stable section of steady state branch
+stst.stable1.x = stst_x(1:ind_hopf_1);
+stst.stable1.y = stst_y(1:ind_hopf_1);
 
-[xm, ym] = df_measr(0, branch9);
+% Extract unstable section of steady state branch
+stst.unstable.x = stst_x(ind_hopf_1:ind_hopf_2);
+stst.unstable.y = stst_y(ind_hopf_1:ind_hopf_2);
+
+% Extract second stable section of steady state branch
+stst.stable2.x = stst_x(ind_hopf_2:end);
+stst.stable2.y = stst_y(ind_hopf_2:end);
+
+% Get default measures for branch 2
+[xm, ym] = df_measr(0, branch2);
+
+% Update measures
 ym.field = 'profile'; ym.row = 1; ym.col = 'all';
-po_x = br_measr(branch9,xm);
-po_y = br_measr(branch9,ym);
-po_y = max(po_y, [], 2);
 
+% Extract periodic orbits branch
+po_x = br_measr(branch2,xm); % theta_us
+po_y = br_measr(branch2,ym); % us
+po_y = max(po_y, [], 2); % find maximum u
+
+% Locate first hopf bifurcation of periodic orbits
 ind_hopf_po_1 = find(arrayfun(@(x) real(x.stability.mu(1)) > 1.1, ...
-    branch9.point), 1, 'first');
+    branch2.point), 1, 'first');
+
+% Locate second hopf bifurcation of periodic orbits
 ind_hopf_po_2 = find(arrayfun(@(x) real(x.stability.mu(1)) > 1.1, ...
-    branch9.point), 1, 'last');
-if isempty(ind_hopf_po_1) % account for no instability
-    ind_hopf_po_1 = length(branch9.point);
+    branch2.point), 1, 'last');
+
+% Account for no instability (no hopf bifurcations of periodic orbits)
+if isempty(ind_hopf_po_1)
+    ind_hopf_po_1 = length(branch2.point);
 end
 
-
-if ind_hopf_po_1 ~= 1 % account for only instability
+% Extract first stable section of periodic orbit branch
+if ind_hopf_po_1 ~= 1 % account for no stability
     po_x_stable_1 = po_x(1:ind_hopf_po_1);
     po_y_stable_1 = po_y(1:ind_hopf_po_1);
-    [po_x_stable_1_norm, po_y_stable_1_norm] = regularise(po_x_stable_1, po_y_stable_1);
-    plot(po_x_stable_1_norm, po_y_stable_1_norm, 'k-o', 'markersize', 4)
+    [po.stable1.x, po.stable1.y] = regularise(po_x_stable_1, po_y_stable_1);
 end
 
-if ind_hopf_po_1 ~= length(branch9.point) % account for no instability
+% Extract unstable section of periodic orbit branch
+if ind_hopf_po_1 ~= length(branch2.point) % account for no instability
     po_x_unstable = po_x(ind_hopf_po_1:ind_hopf_po_2);
     po_y_unstable = po_y(ind_hopf_po_1:ind_hopf_po_2);
-    [po_x_unstable_norm, po_y_unstable_norm] = regularise(po_x_unstable, po_y_unstable);
-    plot(po_x_unstable_norm, po_y_unstable_norm, 'k-x', 'markersize', 4)
+    [po.unstable.x, po.unstable.y] = regularise(po_x_unstable, po_y_unstable);
 end
 
-if ind_hopf_po_1 ~= length(branch9.point) % account for no instability
-    if ind_hopf_po_1 ~= 1 % account for only instability
+% Extract second stable section of periodic orbit branch
+if ind_hopf_po_1 ~= length(branch2.point) % account for no instability
+    if ind_hopf_po_1 ~= 1 % account for a single stable branch already extracted
         po_x_stable_2 = po_x(ind_hopf_po_2:end);
         po_y_stable_2 = po_y(ind_hopf_po_2:end);
-        [po_x_stable_2_norm, po_y_stable_2_norm] = regularise(po_x_stable_2, po_y_stable_2);
-        plot(po_x_stable_2_norm, po_y_stable_2_norm, 'k-o', 'markersize', 4)
+        [po.stable2.x, po.stable2.y] = regularise(po_x_stable_2, po_y_stable_2);
     end
 end
-
-% Format figure 5
-xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
-ylabel("$\mathit{u}$", 'Rotation', 0, 'Interpreter', 'latex');
-xlim([0.4 1]);
-ylim([0 1]);
-xticks([0.4 0.5 0.6 0.7 0.8 0.9 1])
-xticklabels({'0.4','0.5','0.6','0.7', '0.8', '0.9', '1.0'})
-yticks([0 0.2 0.4 0.6 0.8 1.0])
-yticklabels({'0', '0.2', '0.4', '0.6', '0.8', '1.0'});
-
-% stop br_contn when matrix close to singular
 
 %% --------------------------------------------------------------------- %%
 % -------------------------- regularise(x, y) --------------------------- %
@@ -316,3 +249,4 @@ yticklabels({'0', '0.2', '0.4', '0.6', '0.8', '1.0'});
         reg_x = interp1(cum_dist, x, reg_dist, 'linear');
         reg_y = interp1(cum_dist, y, reg_dist, 'linear');
     end
+end

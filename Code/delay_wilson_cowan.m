@@ -250,6 +250,44 @@ xticklabels({'0.4','0.5','0.6','0.7', '0.8', '0.9', '1.0'})
 yticks([0 0.1 0.2 0.3 0.4 0.5])
 yticklabels({'0', '0.1', '0.2', '0.3', '0.5', '0.5'});
 
+%% Figure 7 Recplicate
+% Define model parameters
+p.alpha = 1; p.beta = 60;
+p.a = -1; p.b = -0.4;
+p.c = -1; p.d = 0;
+p.theta_u = 0.7; p.theta_v = 0.5;
+p.tau_1 = 0.09; p.tau_2 = p.tau_1;
+
+[stst, po] = ddeBiftoolSection(p);
+
+% Initialise figure 5
+figure(5); clf
+hold on
+
+plot(stst.stable1.x, stst.stable1.y, 'k-')
+plot(stst.unstable.x, stst.unstable.y, 'k--')
+plot(stst.stable2.x, stst.stable2.y, 'k-')
+
+if isfield(po, 'stable1')
+    plot(po.stable1.x, po.stable1.y, 'k-o', 'markersize', 4);
+end
+if isfield(po, 'unstable')
+    plot(po.unstable.x, po.unstable.y, 'k-x', 'markersize', 4);
+end
+if isfield(po, 'stable2')
+    plot(po.stable2.x, po.stable2.y, 'k-o', 'markersize', 4);
+end
+
+% Format figure 7
+xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
+ylabel("$\mathit{u}$", 'Rotation', 0, 'Interpreter', 'latex');
+xlim([0.4 1]);
+ylim([0 1]);
+xticks([0.4 0.5 0.6 0.7 0.8 0.9 1])
+xticklabels({'0.4','0.5','0.6','0.7', '0.8', '0.9', '1.0'})
+yticks([0 0.2 0.4 0.6 0.8 1.0])
+yticklabels({'0', '0.2', '0.4', '0.6', '0.8', '1.0'});
+
 %% Figure 9a Replicate
 % Select Parameters
 p.alpha = 1; p.beta = 60;
