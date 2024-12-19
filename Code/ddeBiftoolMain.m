@@ -1,27 +1,28 @@
 %% DDE-BIFTOOL - Wilson-Cowan Network with Delays
-% Could convert this into a function to be called from delay_wilson_cowan.m
 
-clearvars; clc
-format compact
+function ddeBiftoolMain()
+
 addpath('ddebiftool/');
 addpath('ddebiftool_extra_psol/');
 addpath('ddebiftool_utilities/');
+
 %#ok<*ASGLU,*NOPTS,*NASGU>
 
-%% Definition of User Functions
+%% Define Model
 % Right-hand side
-neuron_sys_rhs=@(xx,par)[...
-    -xx(1,1)+1/(1+exp(-par(2)*(par(7)+par(3)*xx(1,2)+par(4)*xx(2,2))));....
-    par(1)*(-xx(2,1)+1/(1+exp(-par(2)*(par(8)+par(5)*xx(1,2)+par(6)*xx(2,2)))))];
+sys_rhs = @(xx, par) [ ...
+        -xx(1,1) + 1 / (1 + exp(-par(2) * (par(7) + par(3) * xx(1,2) + par(4) * xx(2,2)))); ...
+        par(1) * (-xx(2,1) + 1 / (1 + exp(-par(2) * (par(8) + par(5) * xx(1,2) + par(6) * xx(2,2))))) ...
+    ];
 
 % Delays and Continuation Parameters
-neuron_tau = @() 9;
+sys_tau = @() 9;
 ind_theta_u = 7;
 ind_taus = 9;
 
-funcs=set_funcs(...
-    'sys_rhs', neuron_sys_rhs,...
-    'sys_tau', @() 9);
+funcs=set_funcs( ...
+    'sys_rhs', sys_rhs, ...
+    'sys_tau', sys_tau);
 
 % Define model parameters
 p.alpha = 1; p.beta = 60;
@@ -346,11 +347,11 @@ xlim([0.55 0.85]);
 
 %% Initialise Folds of Periodic Orbits
 % Speed up computations by vectorisation
-neuron_sys_rhs = @(xx,par) [...
+sys_rhs = @(xx,par) [...
     -xx(1,1,:)+1/(1+exp(-par(2)*(par(7)+par(3)*xx(1,2,:)+par(4)*xx(2,2,:))));....
     par(1)*(-xx(2,1,:)+1/(1+exp(-par(2)*(par(8)+par(5)*xx(1,2,:)+par(6)*xx(2,2,:)))))];
 vfuncs=set_funcs(...
-    'sys_rhs', neuron_sys_rhs,...
+    'sys_rhs', sys_rhs,...
     'sys_tau', @() 9,...
     'x_vectorized', true);
 
@@ -491,3 +492,5 @@ xticks([0.4 0.5 0.6 0.7 0.8 0.9 1])
 xticklabels({'0.4','0.5','0.6','0.7', '0.8', '0.9', '1.0'})
 yticks([0 0.1 0.2 0.3 0.4 0.5])
 yticklabels({'0', '0.1', '0.2', '0.3', '0.5', '0.5'});
+
+end
