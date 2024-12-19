@@ -27,7 +27,22 @@ funcs=set_funcs(...
 p.alpha = 1; p.beta = 60;
 p.a = -1; p.b = -0.4; p.c = -1; p.d = 0;
 p.theta_u = 0.7; p.theta_v = 0.5;
-p.tau_1 = 0.2; p.tau_2 = p.tau_1;
+p.tau_1 = 0.09; p.tau_2 = p.tau_1;
+
+% Define continuation parameters
+if p.tau_1 == 0.09
+    min_theta_u = 0.61;
+    max_theta_u = 1;
+elseif p.tau_1 == 0.2
+    min_theta_u = 0.4;
+    max_theta_u = 0.85;
+elseif p.tau_1 == 0.5
+    min_theta_u = 0.4;
+    max_theta_u = 0.97;
+else
+    min_theta_u = 0.4;
+    max_theta_u = 1;
+end
 
 %% Initial Guess for Steady State
 stst.kind='stst';
@@ -89,6 +104,8 @@ branch8 = br_contn(funcs, branch8, 200);
 % Format figure 1
 xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
 ylabel("$\mathit{u}$", 'Rotation', 0, 'Interpreter', 'latex');
+xlim([0.4 1]);
+ylim([0 1]);
 
 %% Compute Stability of this Steady State Branch
 % Calculate stability of every point along branch
@@ -151,85 +168,137 @@ if success == 1
 end
 
 % Get an empty branch with theta_u as a free parameter
-branch8=df_brnch(funcs,ind_theta_u,'psol');
+branch9=df_brnch(funcs,ind_theta_u,'psol');
 
 % Set bounds for continuation parameter
-branch8.parameter.min_bound(1,:) = [ind_theta_u 0];
-branch8.parameter.max_bound(1,:) = [ind_theta_u 0.85];
-branch8.parameter.max_step(1,:) = [ind_theta_u 0.005];
+branch9.parameter.min_bound(1,:) = [ind_theta_u min_theta_u];
+branch9.parameter.max_bound(1,:) = [ind_theta_u max_theta_u];
+branch9.parameter.max_step(1,:) = [ind_theta_u 0.005];
 
 % Make degenerate periodic solution with amplitude zero at hopf point
 deg_psol = p_topsol(funcs, first_hopf, 0, degree, intervals);
 
 % Use deg_psol and psol as first two points on branch
 deg_psol.mesh = []; % clear the mesh field to save memory and avoid adaptive mesh selection
-branch8.point = deg_psol;
+branch9.point = deg_psol;
 psol.mesh = [];
-branch8.point(2) = psol;
+branch9.point(2) = psol;
 
 % Initialise figure 3
 figure(3); clf;
 
 % Continue periodic solutions branch, plotting amplitude
-branch8 = br_contn(funcs, branch8, 500);
+branch9 = br_contn(funcs, branch9, 200);
 
 % Format figure 3
 xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
 ylabel('Amplitude');
-xlim([0.55 0.85]);
 
 %% Extract max u and theta_u along the branch 
-[xm, ym] = df_measr(0, branch8);
+[xm, ym] = df_measr(0, branch9);
 ym.field = 'profile'; ym.row = 1; ym.col = 'all';
-max_us = br_measr(branch8,ym);
-max_us = max(max_us, [], 2);
-theta_us = br_measr(branch8,xm);
+po_y = br_measr(branch9,ym);
+po_y = max(po_y, [], 2);
+po_x = br_measr(branch9,xm);
 
 % Initialise figure 4
 figure(1);
 hold on
 
-plot(theta_us, max_us, 'k')
+plot(po_x, po_y, 'r-')
+plot(po_x, po_y, 'r.')
 
 %% Compute Stability of this Periodic Orbit Branch
 % Calculate stability of every point along branch
-branch8.method.stability.minimal_real_part = -2;
-branch8 = br_stabl(funcs, branch8, 0, 0);
+branch9.method.stability.minimal_real_part = -2;
+branch9 = br_stabl(funcs, branch9, 0, 0);
 
 % Obtain suitable scalar measures to plot stability along branch
-[xm, ym] = df_measr(1, branch8);
+[xm, ym] = df_measr(1, branch9);
 ym.subfield = 'mu'; ym.row = 1;
 
 % Initialise figure 4
 figure(4); clf;
 
 % Plot stability along branch
-br_plot(branch8, xm, ym, 'b');
-br_plot(branch8, xm, ym, 'b.');
+br_plot(branch9, xm, ym, 'b');
+br_plot(branch9, xm, ym, 'b.');
 % plot([0 length(branch8.point)], [0 0], '-.');
 
 % Format figure 4
 xlabel('Point Number Along Branch');
 ylabel('\Re(\lambda)', 'Rotation', 0);
-xlim([0.55 0.85]);
 
-%% Construct Final Figure 
-[xm, ym] = df_measr(0, branch1);
-
+%% Construct Final Figure
 % Initialise figure 5
 figure(5); clf
 hold on
 
-stst_x = br_measr(branch1, xm);
-stst_y = br_measr(branch1, ym);
-plot(stst_x, stst_y, 'k-')
-
 [xm, ym] = df_measr(0, branch8);
-ym.field = 'profile'; ym.row = 1; ym.col = 'all';
-max_us = br_measr(branch8,ym);
-max_us = max(max_us, [], 2);
-theta_us = br_measr(branch8,xm);
-plot(theta_us, max_us, 'k-o', 'markersize', 4)
+stst_x = br_measr(branch8, xm);
+stst_y = br_measr(branch8, ym);
 
-% if stst stability.l0 > 0 make it a dashed line (unstable)
-% if po stability.mu(1) > 1 make it a line with crosses (unstable)
+ind_hopf_1 = find(arrayfun(@(x) real(x.stability.l0(1)) > 0, ...
+    branch8.point), 1, 'first');
+ind_hopf_2 = find(arrayfun(@(x) real(x.stability.l0(1)) > 0, ...
+    branch8.point), 1, 'last');
+if isempty(ind_hopf_1)
+    ind_hopf_1 = length(branch8.point);
+end
+
+stst_x_stable_1 = stst_x(1:ind_hopf_1);
+stst_y_stable_1 = stst_y(1:ind_hopf_1);
+stst_x_unstable = stst_x(ind_hopf_1:ind_hopf_2);
+stst_y_unstable = stst_y(ind_hopf_1:ind_hopf_2);
+stst_x_stable_2 = stst_x(ind_hopf_2:end);
+stst_y_stable_2 = stst_y(ind_hopf_2:end);
+
+plot(stst_x_stable_1, stst_y_stable_1, 'k-')
+plot(stst_x_unstable, stst_y_unstable, 'k--')
+plot(stst_x_stable_2, stst_y_stable_2, 'k-')
+
+[xm, ym] = df_measr(0, branch9);
+ym.field = 'profile'; ym.row = 1; ym.col = 'all';
+po_x = br_measr(branch9,xm);
+po_y = br_measr(branch9,ym);
+po_y = max(po_y, [], 2);
+
+ind_hopf_po_1 = find(arrayfun(@(x) real(x.stability.mu(1)) > 1.1, ...
+    branch9.point), 1, 'first');
+ind_hopf_po_2 = find(arrayfun(@(x) real(x.stability.mu(1)) > 1.1, ...
+    branch9.point), 1, 'last');
+if isempty(ind_hopf_po_1)
+    ind_hopf_po_1 = length(branch9.point);
+end
+
+
+po_x_stable_1 = po_x(1:ind_hopf_po_1);
+po_y_stable_1 = po_y(1:ind_hopf_po_1);
+po_x_unstable = po_x(ind_hopf_po_1:ind_hopf_po_2);
+po_y_unstable = po_y(ind_hopf_po_1:ind_hopf_po_2);
+po_x_stable_2 = po_x(ind_hopf_po_2:end);
+po_y_stable_2 = po_y(ind_hopf_po_2:end);
+
+
+if ind_hopf_po_1 ~= 1
+    plot(po_x_stable_1, po_y_stable_1, 'k-o', 'markersize', 4)
+end
+
+plot(po_x_unstable, po_y_unstable, 'k-x', 'markersize', 4)
+
+if ind_hopf_po_2 ~= length(branch9.point)
+    plot(po_x_stable_2, po_y_stable_2, 'k-o', 'markersize', 4)
+end
+
+% Format figure 5
+xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
+ylabel("$\mathit{u}$", 'Rotation', 0, 'Interpreter', 'latex');
+xlim([0.4 1]);
+ylim([0 1]);
+xticks([0.4 0.5 0.6 0.7 0.8 0.9 1])
+xticklabels({'0.4','0.5','0.6','0.7', '0.8', '0.9', '1.0'})
+yticks([0 0.2 0.4 0.6 0.8 1.0])
+yticklabels({'0', '0.2', '0.4', '0.6', '0.8', '1.0'});
+
+% stop br_contn when matrix close to singular
+% sample branches at regular theta_us to even out
