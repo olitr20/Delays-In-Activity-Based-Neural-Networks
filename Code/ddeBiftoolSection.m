@@ -27,21 +27,13 @@ funcs=set_funcs(...
 p.alpha = 1; p.beta = 60;
 p.a = -1; p.b = -0.4; p.c = -1; p.d = 0;
 p.theta_u = 0.7; p.theta_v = 0.5;
-p.tau_1 = 0.09; p.tau_2 = p.tau_1;
+p.tau_1 = 0.2; p.tau_2 = p.tau_1;
 
 % Define continuation parameters
-if p.tau_1 == 0.09
-    min_theta_u = 0.61;
-    max_theta_u = 1;
-elseif p.tau_1 == 0.2
-    min_theta_u = 0.4;
-    max_theta_u = 0.85;
-elseif p.tau_1 == 0.5
-    min_theta_u = 0.4;
-    max_theta_u = 0.97;
-else
-    min_theta_u = 0.4;
-    max_theta_u = 1;
+if p.tau_1 == 0.09; min_theta_u = 0.61; max_theta_u = 1;
+elseif p.tau_1 == 0.2; min_theta_u = 0.4; max_theta_u = 0.85;
+elseif p.tau_1 == 0.5; min_theta_u = 0.4; max_theta_u = 0.97;
+else; min_theta_u = 0.4; max_theta_u = 1;
 end
 
 %% Initial Guess for Steady State
@@ -267,27 +259,32 @@ ind_hopf_po_1 = find(arrayfun(@(x) real(x.stability.mu(1)) > 1.1, ...
     branch9.point), 1, 'first');
 ind_hopf_po_2 = find(arrayfun(@(x) real(x.stability.mu(1)) > 1.1, ...
     branch9.point), 1, 'last');
-if isempty(ind_hopf_po_1)
+if isempty(ind_hopf_po_1) % account for no instability
     ind_hopf_po_1 = length(branch9.point);
 end
 
 
-po_x_stable_1 = po_x(1:ind_hopf_po_1);
-po_y_stable_1 = po_y(1:ind_hopf_po_1);
-po_x_unstable = po_x(ind_hopf_po_1:ind_hopf_po_2);
-po_y_unstable = po_y(ind_hopf_po_1:ind_hopf_po_2);
-po_x_stable_2 = po_x(ind_hopf_po_2:end);
-po_y_stable_2 = po_y(ind_hopf_po_2:end);
-
-
-if ind_hopf_po_1 ~= 1
-    plot(po_x_stable_1, po_y_stable_1, 'k-o', 'markersize', 4)
+if ind_hopf_po_1 ~= 1 % account for only instability
+    po_x_stable_1 = po_x(1:ind_hopf_po_1);
+    po_y_stable_1 = po_y(1:ind_hopf_po_1);
+    [po_x_stable_1_norm, po_y_stable_1_norm] = regularise(po_x_stable_1, po_y_stable_1);
+    plot(po_x_stable_1_norm, po_y_stable_1_norm, 'k-o', 'markersize', 4)
 end
 
-plot(po_x_unstable, po_y_unstable, 'k-x', 'markersize', 4)
+if ind_hopf_po_1 ~= length(branch9.point) % account for no instability
+    po_x_unstable = po_x(ind_hopf_po_1:ind_hopf_po_2);
+    po_y_unstable = po_y(ind_hopf_po_1:ind_hopf_po_2);
+    [po_x_unstable_norm, po_y_unstable_norm] = regularise(po_x_unstable, po_y_unstable);
+    plot(po_x_unstable_norm, po_y_unstable_norm, 'k-x', 'markersize', 4)
+end
 
-if ind_hopf_po_2 ~= length(branch9.point)
-    plot(po_x_stable_2, po_y_stable_2, 'k-o', 'markersize', 4)
+if ind_hopf_po_1 ~= length(branch9.point) % account for no instability
+    if ind_hopf_po_1 ~= 1 % account for only instability
+        po_x_stable_2 = po_x(ind_hopf_po_2:end);
+        po_y_stable_2 = po_y(ind_hopf_po_2:end);
+        [po_x_stable_2_norm, po_y_stable_2_norm] = regularise(po_x_stable_2, po_y_stable_2);
+        plot(po_x_stable_2_norm, po_y_stable_2_norm, 'k-o', 'markersize', 4)
+    end
 end
 
 % Format figure 5
@@ -301,4 +298,21 @@ yticks([0 0.2 0.4 0.6 0.8 1.0])
 yticklabels({'0', '0.2', '0.4', '0.6', '0.8', '1.0'});
 
 % stop br_contn when matrix close to singular
-% sample branches at regular theta_us to even out
+
+%% --------------------------------------------------------------------- %%
+% -------------------------- regularise(x, y) --------------------------- %
+    % Define the inverse sigmoid function, for z = u,v
+    function [reg_x, reg_y] = regularise(x, y)
+        % Calculate cumulative euclidean distances
+        dist = sqrt(diff(x).^2 + diff(y).^2);
+        cum_dist = [0; cumsum(dist)];
+
+        % Define uniform spacing
+        tot_dist = cum_dist(end);
+        N = round(length(x) * 0.5);
+        reg_dist = linspace(0, tot_dist, N);
+
+        % Interpolate onto uniform spacing
+        reg_x = interp1(cum_dist, x, reg_dist, 'linear');
+        reg_y = interp1(cum_dist, y, reg_dist, 'linear');
+    end

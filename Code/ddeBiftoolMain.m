@@ -477,8 +477,7 @@ hold on
 % Plot bifurcations
 plot(sn_bifn_1_x, sn_bifn_1_y, 'k', 'linewidth', 1)
 plot(sn_bifn_2_x, sn_bifn_2_y, 'k', 'linewidth', 1)
-dashline(hopf_bifn_x, hopf_bifn_y, ...
-    1.5, 1, 1.5, 1, 'color', 'k', 'linewidth', 1)
+plot(hopf_bifn_x, hopf_bifn_y, 'k--', 'linewidth', 1)
 plot(snpo_bifn_1_x, snpo_bifn_1_y, 'k-o', 'markersize', 4, 'linewidth', 1)
 plot(snpo_bifn_2_x, snpo_bifn_2_y, 'k-o', 'markersize', 4, 'linewidth', 1)
 
@@ -492,4 +491,3 @@ xticks([0.4 0.5 0.6 0.7 0.8 0.9 1])
 xticklabels({'0.4','0.5','0.6','0.7', '0.8', '0.9', '1.0'})
 yticks([0 0.1 0.2 0.3 0.4 0.5])
 yticklabels({'0', '0.1', '0.2', '0.3', '0.5', '0.5'});
-
