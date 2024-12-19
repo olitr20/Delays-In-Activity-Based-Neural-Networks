@@ -256,7 +256,7 @@ p.alpha = 1; p.beta = 60;
 p.a = -1; p.b = -0.4;
 p.c = -1; p.d = 0;
 p.theta_u = 0.7; p.theta_v = 0.5;
-p.tau_1 = 0.09; p.tau_2 = p.tau_1;
+p.tau_1 = 0.2; p.tau_2 = p.tau_1;
 
 [stst, po] = ddeBiftoolSection(p);
 
@@ -418,7 +418,7 @@ elapsed_full = toc(t_full);
 fprintf('Total elasped time: %.1f seconds\n', elapsed_full)
 clear i j
 clear t_full t_iter elapsed_iter elapsed_full
-
+%% Figure 8 Replictae
 le_img = lambda_max;
 le_img(le_img < 0) = 0;
 
