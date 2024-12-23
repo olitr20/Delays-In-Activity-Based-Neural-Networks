@@ -42,8 +42,8 @@ method.stability.minimal_real_part = -2;
 
 % Correct steady state point
 [stst, success] = p_correc(funcs, stst, [], [], method.point);
-if success == 1
-    disp('Initial Steady State Correction Successful')
+if success ~= 1
+    disp('Initial Steady State Correction Unsuccessful')
 end
 
 % Compute point stability
@@ -67,8 +67,8 @@ stst.parameter(ind_theta_u) = stst.parameter(ind_theta_u) + 0.005;
 
 % Correct new steady state point
 [stst, success] = p_correc(funcs, stst, [], [], method.point);
-if success == 1
-    disp('Perturbed Steady State Correction Successful')
+if success ~= 1
+    disp('Perturbed Steady State Correction Unsuccessful')
 end
 
 % Use new steady state point as second steady state branch point
@@ -98,8 +98,8 @@ method.stability.minimal_real_part = -1;
 
 % Correct hopf point
 [hopf, success] = p_correc(funcs, hopf, ind_theta_u, [], method.point);
-if success == 1
-    disp('Initial Hopf Point Correction Successful')
+if success ~= 1
+    disp('Initial Hopf Point Correction unsuccessful')
 end
 first_hopf = hopf; % store hopf point for later use
 
@@ -112,8 +112,8 @@ degree = 3;
 % Correct periodic solution
 method = df_mthod(funcs, 'psol');
 [psol, success] = p_correc(funcs, psol, ind_theta_u, stepcond, method.point);
-if success == 1
-    disp('Periodic Solution Correction Successful')
+if success ~= 1
+    disp('Periodic Solution Correction Unsuccessful')
 end
 
 % Get an empty branch with theta_u as a free parameter

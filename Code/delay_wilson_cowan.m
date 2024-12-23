@@ -218,6 +218,110 @@ annotation('textbox',[0.15 0.21 0.0446 0.0536],'String','$\mathit{v}$',...
 % Save figure
 print(gcf, '../Figures/Figure_3.png', '-dpng', '-r300');
 
+%% Figure 4 - DDE Simulations
+% Select Parameters
+p.alpha = 1; p.beta = 1;
+p.a = 10; p.b = -10;
+p.c = 10; p.d = 2;
+p.theta_u = -2; p.theta_v = -4;
+
+% Define DDE parameters
+p.tspan = [0 50];
+p.history = [0.6 0.7];
+p.options = ddeset('RelTol', 1e-5);
+
+p.tau1 = 0.5; p.tau2 = 1;
+p.delays = [p.tau1 p.tau2];
+[sol1, null] = ddeSim(p);
+
+p.tau1 = 3; p.tau2 = 1;
+p.delays = [p.tau1 p.tau2];
+sol2 = ddeSim(p);
+
+p.tau1 = 6; p.tau2 = 1;
+p.delays = [p.tau1 p.tau2];
+sol3 = ddeSim(p);
+
+p.tau1 = 10; p.tau2 = 1;
+p.delays = [p.tau1 p.tau2];
+sol4 = ddeSim(p);
+
+% Initialise figure 4
+figure(4); clf;
+tiledlayout(2,2,'TileSpacing','Compact','Padding','loose');
+
+% First subplot
+nexttile; hold on;
+
+% Plot nullclines
+plot(null.nullclines.u, null.v_range, '-', 'color', '#c74440', 'linewidth', 1.5)
+plot(null.u_range, null.nullclines.v, '-', 'color', '#2c70b3', 'linewidth', 1.5)
+
+% Plot solution
+plot(sol1.y(1,1), sol1.y(2,1), '.', 'color', '#378c47', 'markersize', 12)
+plot(sol1.y(1,:), sol1.y(2,:), 'color', '#378c47', 'linewidth', 1)
+
+% Format subplot
+ylabel("$\mathit{v}$", 'Interpreter', 'latex','rotation',0)
+set(gca,'FontSize', 14, 'FontName', 'Times')
+xlim([0 1]); ylim([0 1]);
+xticks(0:0.2:1); xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+yticks(0:0.2:1); yticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+
+% Second subplot
+nexttile; hold on;
+
+% Plot nullclines
+plot(null.nullclines.u, null.v_range, '-', 'color', '#c74440', 'linewidth', 1.5)
+plot(null.u_range, null.nullclines.v, '-', 'color', '#2c70b3', 'linewidth', 1.5)
+
+% Plot solution
+plot(sol2.y(1,1), sol2.y(2,1), '.', 'color', '#378c47', 'markersize', 12)
+plot(sol2.y(1,:), sol2.y(2,:), 'color', '#378c47', 'linewidth', 1)
+
+% Format subplot
+set(gca,'FontSize', 14, 'FontName', 'Times')
+xlim([0 1]); ylim([0 1]);
+xticks(0:0.2:1); xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+yticks(0:0.2:1); yticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+
+% Third subplot
+nexttile; hold on;
+
+% Plot nullclines
+plot(null.nullclines.u, null.v_range, '-', 'color', '#c74440', 'linewidth', 1.5)
+plot(null.u_range, null.nullclines.v, '-', 'color', '#2c70b3', 'linewidth', 1.5)
+
+% Plot solution
+plot(sol3.y(1,1), sol3.y(2,1), '.', 'color', '#378c47', 'markersize', 12)
+plot(sol3.y(1,:), sol3.y(2,:), 'color', '#378c47', 'linewidth', 1)
+
+% Format subplot
+xlabel("$\mathit{u}$", 'Interpreter', 'latex')
+ylabel("$\mathit{v}$", 'Interpreter', 'latex','rotation',0)
+set(gca,'FontSize', 14, 'FontName', 'Times')
+xlim([0 1]); ylim([0 1]);
+xticks(0:0.2:1); xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+yticks(0:0.2:1); yticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+
+% Fourth subplot
+nexttile; hold on;
+
+% Plot nullclines
+plot(null.nullclines.u, null.v_range, '-', 'color', '#c74440', 'linewidth', 1.5)
+plot(null.u_range, null.nullclines.v, '-', 'color', '#2c70b3', 'linewidth', 1.5)
+
+% Plot solution
+plot(sol4.y(1,1), sol4.y(2,1), '.', 'color', '#378c47', 'markersize', 12)
+plot(sol4.y(1,:), sol4.y(2,:), 'color', '#378c47', 'linewidth', 1)
+
+% Format subplot
+xlabel("$\mathit{u}$", 'Interpreter', 'latex')
+set(gca,'FontSize', 14, 'FontName', 'Times')
+xlim([0 1]); ylim([0 1]);
+xticks(0:0.2:1); xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+yticks(0:0.2:1); yticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+
 %% Figure 6 Replicate
 % Define model parameters
 p.alpha = 1; p.beta = 60;
