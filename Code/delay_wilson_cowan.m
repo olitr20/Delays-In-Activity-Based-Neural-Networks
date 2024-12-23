@@ -139,7 +139,7 @@ print(gcf, '../Figures/Figure_2.png', '-dpng', '-r300');
 
 %% Figure 3 Replicate
 % Select Parameters
-p.alpha = 1; p.beta = 700; % high beta approximates heaviside
+p.alpha = 1; p.beta = 700; % high \beta approximates heaviside
 p.a = -1; p.b = -0.4;
 p.c = -0.4; p.d = -1;
 p.tau1 = 1; p.tau2 = 1.4;
@@ -163,13 +163,11 @@ sol.AntiSynchronous = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
     p.delays,p.history2,p.tspan,p.options);
 
 % Initilaise figure 3
-figure(3);
-clf;
+figure(3); clf;
 tiledlayout(2,1,'TileSpacing','Compact','Padding','loose');
 
 % First subplot
-nexttile
-hold on;
+nexttile; hold on;
 
 % Plot synchronous solution
 plot(sol.Synchronous.x, sol.Synchronous.y(1,:), ...
@@ -187,8 +185,7 @@ yticks([0 0.5 1.0])
 yticklabels({'0', '0.5', '1.0'});
 
 % Second subplot
-nexttile
-hold on;
+nexttile; hold on;
 
 % Plot antisynchronous solution
 plot(sol.AntiSynchronous.x, sol.AntiSynchronous.y(1,:), ...
@@ -256,37 +253,98 @@ p.alpha = 1; p.beta = 60;
 p.a = -1; p.b = -0.4;
 p.c = -1; p.d = 0;
 p.theta_u = 0.7; p.theta_v = 0.5;
+
+p.tau_1 = 0.5; p.tau_2 = p.tau_1;
+[stst.a, po.a] = ddeBiftoolSection(p);
+
 p.tau_1 = 0.2; p.tau_2 = p.tau_1;
+[stst.b, po.b] = ddeBiftoolSection(p);
 
-[stst, po] = ddeBiftoolSection(p);
+p.tau_1 = 0.09; p.tau_2 = p.tau_1;
+[stst.c, po.c] = ddeBiftoolSection(p);
 
-% Initialise figure 5
-figure(5); clf
-hold on
+% Initialise figure 7
+figure(7); clf
+tiledlayout(3,1,'TileSpacing','Compact','Padding','loose');
 
-plot(stst.stable1.x, stst.stable1.y, 'k-')
-plot(stst.unstable.x, stst.unstable.y, 'k--')
-plot(stst.stable2.x, stst.stable2.y, 'k-')
+% Subplot 1 - \tau = 0.5
+nexttile; hold on;
 
-if isfield(po, 'stable1')
-    plot(po.stable1.x, po.stable1.y, 'k-o', 'markersize', 4);
+plot(stst.a.stable1.x, stst.a.stable1.y, 'k-')
+plot(stst.a.unstable.x, stst.a.unstable.y, 'k--')
+plot(stst.a.stable2.x, stst.a.stable2.y, 'k-')
+
+if isfield(po.a, 'stable1')
+    plot(po.a.stable1.x, po.a.stable1.y, 'k-o', 'markersize', 4);
 end
-if isfield(po, 'unstable')
-    plot(po.unstable.x, po.unstable.y, 'k-x', 'markersize', 4);
+if isfield(po.a, 'unstable')
+    plot(po.a.unstable.x, po.a.unstable.y, 'k-x', 'markersize', 4);
 end
-if isfield(po, 'stable2')
-    plot(po.stable2.x, po.stable2.y, 'k-o', 'markersize', 4);
+if isfield(po.a, 'stable2')
+    plot(po.a.stable2.x, po.a.stable2.y, 'k-o', 'markersize', 4);
 end
 
-% Format figure 7
-xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
+% Format tile 1
 ylabel("$\mathit{u}$", 'Rotation', 0, 'Interpreter', 'latex');
 xlim([0.4 1]);
 ylim([0 1]);
 xticks([0.4 0.5 0.6 0.7 0.8 0.9 1])
 xticklabels({'0.4','0.5','0.6','0.7', '0.8', '0.9', '1.0'})
-yticks([0 0.2 0.4 0.6 0.8 1.0])
-yticklabels({'0', '0.2', '0.4', '0.6', '0.8', '1.0'});
+yticks([0 0.5 1])
+yticklabels({'0', '0.5', '1.0'});
+
+% Subplot 2 - \tau = 0.2
+nexttile; hold on;
+
+plot(stst.b.stable1.x, stst.b.stable1.y, 'k-')
+plot(stst.b.unstable.x, stst.b.unstable.y, 'k--')
+plot(stst.b.stable2.x, stst.b.stable2.y, 'k-')
+
+if isfield(po.b, 'stable1')
+    plot(po.b.stable1.x, po.b.stable1.y, 'k-o', 'markersize', 4);
+end
+if isfield(po.b, 'unstable')
+    plot(po.b.unstable.x, po.b.unstable.y, 'k-x', 'markersize', 4);
+end
+if isfield(po.b, 'stable2')
+    plot(po.b.stable2.x, po.b.stable2.y, 'k-o', 'markersize', 4);
+end
+
+% Format tile 2
+ylabel("$\mathit{u}$", 'Rotation', 0, 'Interpreter', 'latex');
+xlim([0.5 0.9]);
+ylim([0 0.9]);
+xticks([0.5 0.6 0.7 0.8 0.9])
+xticklabels({'0.4','0.5','0.6','0.7', '0.8', '0.9', '1.0'})
+yticks([0.2 0.4 0.6 0.8])
+yticklabels({'0.2', '0.4', '0.6', '0.8'});
+
+% Subplot 3 - \tau = 0.09
+nexttile; hold on;
+
+plot(stst.c.stable1.x, stst.c.stable1.y, 'k-')
+plot(stst.c.unstable.x, stst.c.unstable.y, 'k--')
+plot(stst.c.stable2.x, stst.c.stable2.y, 'k-')
+
+if isfield(po.c, 'stable1')
+    plot(po.c.stable1.x, po.c.stable1.y, 'k-o', 'markersize', 4);
+end
+if isfield(po.c, 'unstable')
+    plot(po.c.unstable.x, po.c.unstable.y, 'k-x', 'markersize', 4);
+end
+if isfield(po.c, 'stable2')
+    plot(po.c.stable2.x, po.c.stable2.y, 'k-o', 'markersize', 4);
+end
+
+% Format tile 3
+xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
+ylabel("$\mathit{u}$", 'Rotation', 0, 'Interpreter', 'latex');
+xlim([0.5 0.9]);
+ylim([0.3 0.7]);
+xticks([0.5 0.6 0.7 0.8 0.9])
+xticklabels({'0.5','0.6','0.7', '0.8', '0.9'})
+yticks([0.3 0.4 0.5 0.6 0.7])
+yticklabels({'0.3', '0.4', '0.5', '0.6', '0.7'});
 
 %% Figure 9a Replicate
 % Select Parameters
@@ -380,14 +438,14 @@ print(gcf, '../Figures/Figure_9b.png', '-dpng', '-r300');
 % This section takes approx 2.5 hours to complete
 
 % Define Lyaounov exponent calculation parameters
-ptbn = 0.001; % distance to perturb points along main trajectory
-int = 5; % interval to simulate perturbations for
+p.ptbn = 0.001; % distance to perturb points along main trajectory
+p.int = 5; % interval to simulate perturbations for
 
 % Define grid over a, b parameter space
-res = 512; % specify resolution of grid
-p.arange = linspace(-10, 0, res);
-p.brange = linspace(0, 5, res);
-[p.a_grid, p.b_grid] = meshgrid(p.arange, p.brange);
+p.res = 512; % specify resolution of grid
+p.arange = linspace(-10, 0, p.res); % linear spacing over first parameter
+p.brange = linspace(0, 5, p.res); % linear spacing over second parameter
+[p.a_grid, p.b_grid] = meshgrid(p.arange, p.brange); % mesh grid over parameter space
 
 % Define model parameters
 p.alpha = 1; p.beta = 60;
@@ -400,24 +458,11 @@ p.delays = [p.tau1 p.tau2];
 p.history = [0.074 0.077];
 p.options = ddeset('RelTol', 1e-5);
 
-% Calculate maximal lyapunov exponents
-lambda_max = zeros(size(p.a_grid, 1), size(p.a_grid, 2));
-t_full = tic;
-for i = 1:size(p.a_grid, 1)
-    t_iter = tic;
-    for j = 1:size(p.a_grid, 2)
-        p.a = p.a_grid(i,j); p.b = p.b_grid(i,j);
-        p.c = p.b; p.d = p.a;
-        lambda_max(i,j) = lyapunovExponent(@(t,y,Z) ddefun(t,y,Z,p), ...
-            p, ptbn, int);
-    end
-    elapsed_iter = toc(t_iter);
-    fprintf('Completed b = %.2f, elapsed time: %.1f seconds\n', p.b, elapsed_iter)
-end
-elapsed_full = toc(t_full);
-fprintf('Total elasped time: %.1f seconds\n', elapsed_full)
-clear i j
-clear t_full t_iter elapsed_iter elapsed_full
+% Calculate maximum Lyapunov Exponents
+% lambda_max = calcLyapunovExponent(p);
+
+% Alternatively, load pre-calculated lambda_max
+load('lambda_max.mat')
 %% Figure 8 Replictae
 le_img = lambda_max;
 le_img(le_img < 0) = 0;
@@ -446,37 +491,7 @@ yticklabels({'0', '1', '2', '3', '4', '5'});
 % Save figure
 print(gcf, '../Figures/Figure_8.png', '-dpng', '-r300');
 
-% Save LE table
-save('lambda_max','lambda_max')
-
-%% Alternate Figure 8 Preparation
-le_img = lambda_max;% - 1.2;
-% le_img(le_img < 0) = 0;
-% le_img = 2 * (le_img - min(le_img(:))) / (max(le_img(:)) - min(le_img(:)));
-
-figure(11);
-clf; hold on
-
-imagesc(p.a_grid(1, :), p.b_grid(:, 1), le_img);
-colormap(flipud(gray));
-colorbar;
-
-xlabel("$\mathit{a}$", 'Interpreter', 'latex')
-ylabel("$\mathit{b}$", 'Interpreter', 'latex','rotation',0)
-set(gca,'FontSize', 14, 'FontName', 'Times')
-
-astep = (p.arange(2) - p.arange(1)) / 2;
-bstep = (p.brange(2) - p.brange(1)) / 2;
-
-xlim([-10-astep, 0+astep]);
-ylim([0-bstep, 5+bstep]);
-xticks([-10 -8 -6 -4 -2 0])
-yticks([0 1 2 3 4 5])
-xticklabels({'-10', '-8', '-6', '-4', '-2', '0'});
-yticklabels({'0', '1', '2', '3', '4', '5'});
-
-% Save figure
-print(gcf, '../Figures/Figure_8a.png', '-dpng', '-r300');
+clear astep bstep
 
 %% --------------------------------------------------------------------- %%
 % ------------------------------- f(x,p) -------------------------------- %
