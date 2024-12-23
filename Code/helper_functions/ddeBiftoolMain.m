@@ -2,9 +2,9 @@
 
 function bifn = ddeBiftoolMain(p)
 
-addpath('ddebiftool/');
-addpath('ddebiftool_extra_psol/');
-addpath('ddebiftool_utilities/');
+addpath('helper_functions/ddebiftool/');
+addpath('helper_functions/ddebiftool_utilities/');
+addpath('helper_functions/ddebiftool_extra_psol/');
 
 %#ok<*ASGLU,*NOPTS,*NASGU>
 

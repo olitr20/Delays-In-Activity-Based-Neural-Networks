@@ -1,3 +1,6 @@
+%% Modelling Delays in an Activity-Based Wilson-Cowan Neural Network
+addpath('helper_functions/')
+
 %% Figure 1 Replicate
 % Select Parameters
 p.alpha = 1; p.beta = 1;
