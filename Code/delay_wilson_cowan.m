@@ -250,7 +250,7 @@ sol4 = ddeSim(p);
 
 % Initialise figure 4
 figure(4); clf;
-tiledlayout(2,2,'TileSpacing','Compact','Padding','loose');
+tiledlayout(2, 2, 'tileSpacing', 'compact', 'padding', 'loose');
 
 % First subplot
 nexttile; hold on;
@@ -264,8 +264,9 @@ plot(sol1.y(1,1), sol1.y(2,1), '.', 'color', '#378c47', 'markersize', 12)
 plot(sol1.y(1,:), sol1.y(2,:), 'color', '#378c47', 'linewidth', 1)
 
 % Format subplot
-ylabel("$\mathit{v}$", 'Interpreter', 'latex','rotation',0)
-set(gca,'FontSize', 14, 'FontName', 'Times')
+ylabel("$\mathit{v}$", 'interpreter', 'latex', 'rotation', 0, ...
+    'position', [-0.2, 0.5, -1], 'verticalalignment', 'middle');
+set(gca,'fontSize', 14, 'fontName', 'times')
 xlim([0 1]); ylim([0 1]);
 xticks(0:0.2:1); xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
 yticks(0:0.2:1); yticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
@@ -282,7 +283,7 @@ plot(sol2.y(1,1), sol2.y(2,1), '.', 'color', '#378c47', 'markersize', 12)
 plot(sol2.y(1,:), sol2.y(2,:), 'color', '#378c47', 'linewidth', 1)
 
 % Format subplot
-set(gca,'FontSize', 14, 'FontName', 'Times')
+set(gca,'fontSize', 14, 'fontName', 'times')
 xlim([0 1]); ylim([0 1]);
 xticks(0:0.2:1); xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
 yticks(0:0.2:1); yticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
@@ -299,8 +300,9 @@ plot(sol3.y(1,1), sol3.y(2,1), '.', 'color', '#378c47', 'markersize', 12)
 plot(sol3.y(1,:), sol3.y(2,:), 'color', '#378c47', 'linewidth', 1)
 
 % Format subplot
-xlabel("$\mathit{u}$", 'Interpreter', 'latex')
-ylabel("$\mathit{v}$", 'Interpreter', 'latex','rotation',0)
+xlabel("$\mathit{u}$", 'interpreter', 'latex')
+ylabel("$\mathit{v}$", 'interpreter', 'latex', 'rotation', 0, ...
+    'position', [-0.2, 0.5, -1], 'verticalalignment', 'middle')
 set(gca,'FontSize', 14, 'FontName', 'Times')
 xlim([0 1]); ylim([0 1]);
 xticks(0:0.2:1); xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
@@ -324,6 +326,9 @@ xlim([0 1]); ylim([0 1]);
 xticks(0:0.2:1); xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
 yticks(0:0.2:1); yticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
 
+% Save figure
+print(gcf, '../Figures/Figure_4.png', '-dpng', '-r300');
+
 %% Figure 6 Replicate
 % Define model parameters
 p.alpha = 1; p.beta = 60;
@@ -345,16 +350,20 @@ plot(bifn.hopf.x, bifn.hopf.y, 'k--', 'linewidth', 1) % hopf
 plot(bifn.snpo1.x, bifn.snpo1.y, 'k-o', 'markersize', 4, 'linewidth', 1) % first saddle-node of periodic orbits
 plot(bifn.snpo2.x, bifn.snpo2.y, 'k-o', 'markersize', 4, 'linewidth', 1) % second saddle-node of periodic orbits
 
-% Format figure 8
+% Format figure 6
 set(gca,'FontSize', 14, 'FontName', 'Times')
-xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex')
-ylabel('\tau', 'rotation', 0);
+xlabel("$\theta_{\mathit{u}}$", 'interpreter', 'latex')
+ylabel('\tau', 'rotation', 0, ...
+    'position', [0.34, 0.25, -1], 'verticalalignment', 'middle');
 xlim([0.4, 1]);
 ylim([0, 0.5]);
 xticks([0.4 0.5 0.6 0.7 0.8 0.9 1])
 xticklabels({'0.4','0.5','0.6','0.7', '0.8', '0.9', '1.0'})
 yticks([0 0.1 0.2 0.3 0.4 0.5])
 yticklabels({'0', '0.1', '0.2', '0.3', '0.5', '0.5'});
+
+% Save figure
+print(gcf, '../Figures/Figure_6.png', '-dpng', '-r300');
 
 %% Figure 7 Recplicate
 % Define model parameters
@@ -394,7 +403,8 @@ if isfield(po.a, 'stable2')
 end
 
 % Format tile 1
-ylabel("$\mathit{u}$", 'Rotation', 0, 'Interpreter', 'latex');
+ylabel("$\mathit{u}$", 'rotation', 0, 'interpreter', 'latex', ...
+    'position', [0.35, 0.5, -1], 'verticalalignment', 'middle');
 xlim([0.4 1]);
 ylim([0 1]);
 xticks([0.4 0.5 0.6 0.7 0.8 0.9 1])
@@ -420,11 +430,12 @@ if isfield(po.b, 'stable2')
 end
 
 % Format tile 2
-ylabel("$\mathit{u}$", 'Rotation', 0, 'Interpreter', 'latex');
+ylabel("$\mathit{u}$", 'rotation', 0, 'interpreter', 'latex', ...
+    'position', [0.465, 0.45, -1], 'verticalalignment', 'middle');
 xlim([0.5 0.9]);
 ylim([0 0.9]);
 xticks([0.5 0.6 0.7 0.8 0.9])
-xticklabels({'0.4','0.5','0.6','0.7', '0.8', '0.9', '1.0'})
+xticklabels({'0.5','0.6','0.7','0.8', '0.9'})
 yticks([0.2 0.4 0.6 0.8])
 yticklabels({'0.2', '0.4', '0.6', '0.8'});
 
@@ -447,13 +458,17 @@ end
 
 % Format tile 3
 xlabel("$\theta_{\mathit{u}}$", 'Interpreter', 'latex');
-ylabel("$\mathit{u}$", 'Rotation', 0, 'Interpreter', 'latex');
+ylabel("$\mathit{u}$", 'Rotation', 0, 'Interpreter', 'latex', ...
+    'position', [0.465, 0.5, -1], 'verticalalignment', 'middle');
 xlim([0.5 0.9]);
 ylim([0.3 0.7]);
 xticks([0.5 0.6 0.7 0.8 0.9])
 xticklabels({'0.5','0.6','0.7', '0.8', '0.9'})
 yticks([0.3 0.4 0.5 0.6 0.7])
 yticklabels({'0.3', '0.4', '0.5', '0.6', '0.7'});
+
+% Save figure
+print(gcf, '../Figures/Figure_7.png', '-dpng', '-r300');
 
 %% Figure 9a Replicate
 % Select Parameters
