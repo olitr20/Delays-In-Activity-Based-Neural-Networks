@@ -1,5 +1,7 @@
 %% Modelling Delays in an Activity-Based Wilson-Cowan Neural Network
-addpath('helper_functions/')
+clearvars; clc;
+addpath('Code/helper_functions/');
+cd('Code/')
 
 %% Figure 1 Replicate
 % Select Parameters
@@ -206,13 +208,13 @@ yticks([0 0.5 1.0])
 yticklabels({'0', '0.5', '1.0'});
 
 % Add annotations
-annotation('textbox',[0.15 0.83 0.0446 0.0536],'String','$\mathit{u}$',...
+annotation('textbox',[0.14 0.81 0.0446 0.0536],'String','$\mathit{u}$',...
     'FontSize',14,'EdgeColor','none','Interpreter','latex');
-annotation('textbox',[0.15 0.63 0.0446 0.0536],'String','$\mathit{v}$',...
+annotation('textbox',[0.15 0.61 0.0446 0.0536],'String','$\mathit{v}$',...
     'FontSize',14,'EdgeColor','none','Interpreter','latex');
-annotation('textbox',[0.15 0.38 0.0446 0.0536],'String','$\mathit{u}$',...
+annotation('textbox',[0.15 0.37 0.0446 0.0536],'String','$\mathit{u}$',...
     'FontSize',14,'EdgeColor','none','Interpreter','latex');
-annotation('textbox',[0.15 0.21 0.0446 0.0536],'String','$\mathit{v}$',...
+annotation('textbox',[0.15 0.18 0.0446 0.0536],'String','$\mathit{v}$',...
     'FontSize',14,'EdgeColor','none','Interpreter','latex');
 
 % Save figure
