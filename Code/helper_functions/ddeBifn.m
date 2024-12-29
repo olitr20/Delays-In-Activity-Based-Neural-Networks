@@ -6,6 +6,7 @@ function bifn = ddeBifn(p)
     
     % Preallocate storage for bifurcation points
     bifn.sols = arrayfun(@(x) nan(2, 121), 1:3, 'UniformOutput', false);
+    bifn.omegas = arrayfun(@(x) nan(1, 121), 1:3, 'UniformOutput', false);
     
     % Iterate over tau1 values
     for i = 1:length(p.tau1_vals)
@@ -32,32 +33,66 @@ function bifn = ddeBifn(p)
         end
         
         % If solutions exist, find unique tau2 values
-        if ~isempty(sols)        
+        if ~isempty(sols)
+            if tau1 == 2.6
+                disp('')
+            end
             % Remove repeated solutions of tau2
             sols_unique = unique(sols(:,1),'rows');
+            % Preallocate an array to store the mode omega values
+            omegas_unique = zeros(size(sols_unique));
+            
+            % Loop through each unique tau2 value and find the mode of omega
+            for j = 1:length(sols_unique)
+                % Find the rows corresponding to the current tau2 value
+                idx = (sols(:,1) == sols_unique(j));
+                
+                % Extract the corresponding omega values (from the second column)
+                omega_values = sols(idx, 2);
+                
+                % Compute the mode of the omega values
+                omegas_unique(j) = mode(omega_values);
+            end
     
             if tau1 <= 4.6
                 if size(sols_unique,1) == 1
                     bifn.sols{3}(:,i) = [tau1, sols_unique(1,1)];
+
+                    bifn.omegas{3}(:,i) = [omegas_unique(1,1)];
                 elseif size(sols_unique,1) == 2
                     bifn.sols{1}(:,i) = [tau1, sols_unique(1,1)];
                     bifn.sols{2}(:,i) = [tau1, sols_unique(2,1)];
+
+                    bifn.omegas{1}(:,i) = [omegas_unique(1,1)];
+                    bifn.omegas{2}(:,i) = [omegas_unique(2,1)];
                 elseif size(sols_unique,1) >= 3
                     bifn.sols{1}(:,i) = [tau1, sols_unique(1,1)];
                     bifn.sols{2}(:,i) = [tau1, sols_unique(2,1)];
                     bifn.sols{3}(:,i) = [tau1, sols_unique(3,1)];
+
+                    bifn.omegas{1}(:,i) = [omegas_unique(1,1)];
+                    bifn.omegas{2}(:,i) = [omegas_unique(2,1)];
+                    bifn.omegas{3}(:,i) = [omegas_unique(3,1)];
                 end
             else
                 bifn.sols{1}(:,i) = [tau1, sols_unique(1,1)];
+
+                bifn.omegas{1}(:,i) = [omegas_unique(1,1)];
             end
         end
     end
     
     bifn.line_1 = bifn.sols{3};
     bifn.line_1(:, any(isnan(bifn.line_1), 1)) = [];
+
+    bifn.line_1a = bifn.omegas{3};
+    bifn.line_1a(:, any(isnan(bifn.line_1a), 1)) = [];
     
     bifn.line_2 = [fliplr(bifn.sols{2}), bifn.sols{1}];
     bifn.line_2(:, any(isnan(bifn.line_2), 1)) = [];
+
+    bifn.line_2a = [fliplr(bifn.omegas{2}), bifn.omegas{1}];
+    bifn.line_2a(:, any(isnan(bifn.line_2a), 1)) = [];
 
 %% --------------------------------------------------------------------- %%
 % ------------------------------- bias(v) ------------------------------- %
