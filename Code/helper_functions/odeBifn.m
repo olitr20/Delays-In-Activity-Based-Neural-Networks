@@ -1,22 +1,7 @@
-function [hopf, sn, bt] = odeBifn(hopf, sn, bt, p)
+function [hopf, sn, bt] = odeBifn(p)
 % BIFN_ODE  Calculate hopf, saddle-node, and bogdanov-takens bifurcations
 % in the \theta_{u}, \theta_{v} plane.
 %   Input:
-%       hopf: structure containing us - range of u values to search for
-%           hopf bifurcations. Found by analysing Tr L (eq. 2.5) in the u-v
-%           plane, taking absolute lower and upper bounds as limits of Tr L
-%           in the real plane and relative upper and lower bounds as roots
-%           of the Tr L.
-%       sn: structure containing us - range of u values to search for
-%           saddle-node bifurcations. Found by analysing Det L, calculated
-%           from L (eq. 2.4), in the u-v plane, taking absolute lower and
-%           upper bounds as the roots of Det L. Note that Det L = \alpha -
-%           \alpha d \beta v^{*} (1 - v^{*}) - \alpha a \beta u^{*}
-%           (1 - u^{*}) + \alpha \beta^{2} (ad - bc) u^{*} (1 - u^{*})
-%           v^{*} (1 - v^{*}).
-%       bt: structure containing us - range of u values to searcg for
-%           bogdanov-takens bifurcations. Found by analysing Tr L = 0 and
-%           Det L = 0
 %       p:  structure containing model parameters of the form {\alpha,
 %           \beta, a, b, c, d}
 %   Output:
@@ -30,33 +15,59 @@ function [hopf, sn, bt] = odeBifn(hopf, sn, bt, p)
 %           structure containing uP (u plus), uM (u minus), vP (v plus) and
 %           vM (v minus).
 
-    switch nargin
-        case 3 % if only hopf, sn and p are provided
-            p = bt;
-            bt = [];
-        case 4
-            % all inputs provided
-    end
+    % Define u ranges for bifurcation search
+    hopf.us = 0:0.00001:1;
+    sn.us = 0:0.00001:1;
+
+    % Extract only valid u values
+    [hopf.v_plus, hopf.v_minus] = vTrace(hopf.us,p);
+    hopf.us = hopf.us( ...
+        imag(hopf.v_plus) == 0 & real(hopf.v_plus) < 1 & ...
+        imag(hopf.v_minus) == 0 & real(hopf.v_minus) > 0);
+
+    [sn.v_plus, sn.v_minus] = vDet(sn.us,p);
+    sn.us = sn.us( ...
+        imag(sn.v_plus) == 0 & real(sn.v_plus) > 0);
 
     % Calculate hopf bifurcation
     [hopf.v_plus, hopf.v_minus] = vTrace(hopf.us,p);
     hopf.theta = fixedPoint(hopf.us,p,hopf.v_plus,hopf.v_minus);
     hopf.theta.uP = real(hopf.theta.uP); hopf.theta.uM = real(hopf.theta.uM);
     hopf.theta.vP = real(hopf.theta.vP); hopf.theta.vM = real(hopf.theta.vM);
+
+    % Separete non-contiguous sections
+    jumps = abs(diff(hopf.theta.uP)) > 100 * mean(abs(diff(hopf.theta.uP)));
+    hopf.theta.uP([false, jumps]) = NaN;
+
+    jumps = abs(diff(hopf.theta.uM)) > 100 * mean(abs(diff(hopf.theta.uM)));
+    hopf.theta.uM([false, jumps]) = NaN;
     
     % Calculate saddle node bifurcation
     [sn.v_plus, sn.v_minus] = vDet(sn.us,p);
     sn.theta = fixedPoint(sn.us,p,sn.v_plus,sn.v_minus);
     sn.theta.uP = real(sn.theta.uP); sn.theta.uM = real(sn.theta.uM);
     sn.theta.vP = real(sn.theta.vP); sn.theta.vM = real(sn.theta.vM);
+
+    % Separete non-contiguous sections
+    jumps = abs(diff(sn.theta.uP)) > 100 * mean(abs(diff(sn.theta.uP)));
+    sn.theta.uP([false, jumps]) = NaN;
+
+    jumps = abs(diff(sn.theta.uM)) > 100 * mean(abs(diff(sn.theta.uM)));
+    sn.theta.uM([false, jumps]) = NaN;
     
-    
-    % Calculate bogdanov-takens bifurcations
-    if ~isempty(bt)
+    % Locate bogdanov-takens bifurcations
+    try
+        options = optimoptions('fsolve','Display','none','Algorithm','levenberg-marquardt');
+        bt.us(1) = fsolve(@systemEquations, 0, options);
+        bt.us(2) = fsolve(@systemEquations, 1, options);
+
+        % Calculate bogdanov-takens bifurcations
         [bt.v_plus, bt.v_minus] = vTrace(bt.us,p);
         bt.theta = fixedPoint(bt.us, p, bt.v_plus,bt.v_minus);
         bt.theta.uP = real(bt.theta.uP); bt.theta.uM = real(bt.theta.uM);
         bt.theta.vP = real(bt.theta.vP); bt.theta.vM = real(bt.theta.vM);
+    catch
+        bt = [];
     end
 
 %% --------------------------------------------------------------------- %%
@@ -76,7 +87,7 @@ function [hopf, sn, bt] = odeBifn(hopf, sn, bt, p)
         v_trace_minus = (1 - sqrt(sqrt_term)) ./ 2;
     end
 
-% ------------------- Saddle Node Fixed Point Equation ------------------ %
+% ------------------ Saddle Node Fixed Point Equation ------------------- %
     % Define the fixed point equation derived from Det L
     function [v_det_plus, v_det_minus] = vDet(us,p)
         gamma = (p.d .* p.beta) - (p.beta .^ 2) .* ...
@@ -86,6 +97,16 @@ function [hopf, sn, bt] = odeBifn(hopf, sn, bt, p)
 
         v_det_plus = (gamma + sqrt(sqrt_term)) ./ (2 .* gamma);
         v_det_minus = (gamma - sqrt(sqrt_term)) ./ (2 .* gamma);
+    end
+
+% ---------------- Bogdanov-Takens Fixed Point Equation ----------------- %
+    % Define the fixed point equation derived from Det L
+    function F = systemEquations(us)
+        [v_trace_plus, v_trace_minus] = vTrace(us, p);
+        [v_det_plus, v_det_minus] = vDet(us, p);
+
+        F(1) = v_trace_plus - v_det_minus;  % Match one branch
+        F(2) = v_trace_minus - v_det_plus;  % Match the other branch
     end
 
 % ----------------------- Parameterised Equations ----------------------- %

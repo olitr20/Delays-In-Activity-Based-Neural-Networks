@@ -9,12 +9,8 @@ p.alpha = 1; p.beta = 1;
 p.a = 10; p.b = -10;
 p.c = 10; p.d = 2;
 
-% Define u ranges for bifurcation search
-hopf.us = [0.18:0.0001:0.2764, 0.7236:0.0001:0.82];
-sn.us = 0.1127:0.0001:0.8873;
-
 % Calculate hopf, saddle-node and bogdanov-takens bifurcations
-[hopf, sn] = odeBifn(hopf, sn, p);
+[hopf, sn] = odeBifn(p);
 
 % Initialise figure 1
 figure(1);
@@ -52,13 +48,8 @@ p.alpha = 1; p.beta = 1;
 p.a = 10; p.b = -10;
 p.c = 10; p.d = 2;
 
-% Define u ranges for bifurcation search
-hopf.us = [0.18:0.0001:0.2764, 0.7236:0.0001:0.82];
-sn.us = 0.1127:0.0001:0.8873;
-bt.us = [0.25769, 0.74231];
-
 % Calculate hopf, saddle-node and bogdanov-takens bifurcations
-[hopf, sn, bt] = odeBifn(hopf, sn, bt, p);
+[hopf, sn, bt] = odeBifn(p);
 
 % Initialise figure 1
 figure(1);
@@ -116,10 +107,6 @@ bifn = ddeBifn(p);
 % Initialise figure 2
 figure(2);
 clf; hold on;
-
-% Plot bifurcation lines
-% plot(bifn.line_1(1,:), bifn.line_1(2,:), 'k')
-% plot(bifn.line_2(1,:), bifn.line_2(2,:), 'k')
 
 % Define RGB values for the colours
 colour1 = [247, 126, 27] / 255; % #f77e1b
