@@ -108,37 +108,26 @@ bifn = ddeBifn(p);
 figure(2);
 clf; hold on;
 
-% Define RGB values for the colours
-colour1 = [247, 126, 27] / 255; % #f77e1b
-colour2 = [44, 112, 179] / 255; % #2c70b3
-colour3 = [199, 68, 64] / 255; % #c74440
+% Define a custom colour palette
+c_palette = customColourPalette(["f77e1b"; "2c70b3"; "c74440"]);
 
-customColormap = [linspace(colour1(1), colour2(1), 256/2)', ...
-                  linspace(colour1(2), colour2(2), 256/2)', ...
-                  linspace(colour1(3), colour2(3), 256/2)'; ...
-                  linspace(colour2(1), colour3(1), 256/2)', ...
-                  linspace(colour2(2), colour3(2), 256/2)', ...
-                  linspace(colour2(3), colour3(3), 256/2)'];
-
-
-% Define the frequency range explicitly
-freqMin = 0; % Minimum frequency value
-freqMax = max(cellfun(@max, bifn.omegas)); % Maximum frequency value
+% Define omega range
+omega.min = 0; omega.max = max(cellfun(@max, bifn.omegas));
 
 for i = 1:length(bifn.line_1)-1
     % Define each segment
     x_seg = [bifn.line_1(1,i), bifn.line_1(1,i+1)];
     y_seg = [bifn.line_1(2,i), bifn.line_1(2,i+1)];
     
-    % Map frequency to colormap index without normalisation
-    freq = bifn.line_1a(i+1);
-    colourIdx = round(((freq - freqMin) / (freqMax - freqMin)) * (256 - 1)) + 1;
-    colourIdx = max(min(colourIdx, 256), 1); % Ensure index is within bounds
-    colour = customColormap(colourIdx, :);
+    % Map omega to colormap
+    omega.val = bifn.line_1a(i+1);
+    omega.colour_idx = round(((omega.val - omega.min) / (omega.max - omega.min)) * (256 - 1)) + 1;
+    omega.colour = c_palette(omega.colour_idx, :);
     
     % Plot the segment with the corresponding colour
-    plot(x_seg, y_seg, 'Color', colour, 'LineWidth', 2);
+    plot(x_seg, y_seg, 'Color', omega.colour, 'LineWidth', 2);
 end
+clear i x_seg y_seg
 
 for i = 1:length(bifn.line_2)-1
     % Define each segment
@@ -146,14 +135,14 @@ for i = 1:length(bifn.line_2)-1
     y_seg = [bifn.line_2(2,i), bifn.line_2(2,i+1)];
     
     % Map frequency to colormap index without normalisation
-    freq = bifn.line_2a(i+1);
-    colourIdx = round(((freq - freqMin) / (freqMax - freqMin)) * (256 - 1)) + 1;
-    colourIdx = max(min(colourIdx, 256), 1); % Ensure index is within bounds
-    colour = customColormap(colourIdx, :);
+    omega.val = bifn.line_2a(i+1);
+    omega.colour_idx = round(((omega.val - omega.min) / (omega.max - omega.min)) * (256 - 1)) + 1;
+    omega.colour = c_palette(omega.colour_idx, :);
     
     % Plot the segment with the corresponding colour
-    plot(x_seg, y_seg, 'Color', colour, 'LineWidth', 2);
+    plot(x_seg, y_seg, 'Color', omega.colour, 'LineWidth', 2);
 end
+clear i x_seg y_seg
 
 % Format Axes
 xlabel("\tau_1");
@@ -166,9 +155,10 @@ yticks([0 0.5 1.0 1.5])
 yticklabels({'0', '0.5', '1.0', '1.5'});
 
 % Add a colour bar for reference
-colormap(customColormap);
-clim([freqMin freqMax]); % Set the colour axis to match your data range
+colormap(c_palette);
+clim([omega.min omega.max]); % Set the colour axis to match your data range
 colorbar;
+clear omega c_palette
 
 % Add annotations
 annotation('textbox',[0.1746 0.5762 0.1219 0.0619],'String','unstable',...
