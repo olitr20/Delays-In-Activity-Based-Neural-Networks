@@ -1,4 +1,12 @@
 function c_palette = customColourPalette(colours)
+% CUSTOMCOLOURPALETTE  Generate a custom colour range across three distinct
+% colours.
+%   Input:
+%       colours: A cell 3x1 string array containing hexadecimal codes for
+%           three distinct colours.
+%   Output:
+%       c_palette: A 256x3 numeric array containing decimal rgb values
+%       spanning the range of the three specified colours.
 
     rgb = zeros(3,3);
     for i = 1:length(colours)

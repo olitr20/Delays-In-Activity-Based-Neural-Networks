@@ -1,7 +1,22 @@
-%% Calculate Maximum Lyapunov Exponents over parameter space
-% This takes approx 2.5 hours to complete
+function lambda_max = calcLyapunovExponent(p)
+% CALCLYAPUNOVEXPONENT Calculate maximal Lyapunov Exponents by numerically
+% integrationg the variational equation (identical to the underlying system
+% at each timepoint but incorporating a perturbed history) in parallel with
+% the underlying system. Logarithm rate of growth is calculated at the end
+% of a specified time span for perturbation simulations which is then
+% averaged over the whole time series.
+%   Input:
+%       p:  structure containing model parameters of the form {\alpha,
+%           \beta, \theta_{u}, \theta_{v}, \tau_{1}, \tau_{2}, delays,
+%           history, timespan, options, ptbn (perturbation amount), int
+%           (time interval to simulate perturbations for), a_grid (grid of
+%           a parameter values at a given resolution), b_grid (grid of b
+%           parameter values at a given resolution)}.
+%   Output:
+%       lambda_max: a numeric array containing all maximal lyapunov
+%           components over the specified parameter range set by a_grid and
+%           b_grid.
 
-function lambda_max = calcLyapunovExponent(p)    
     % Calculate maximal lyapunov exponents
     lambda_max = zeros(size(p.a_grid, 1), size(p.a_grid, 2));
     t_full = tic;

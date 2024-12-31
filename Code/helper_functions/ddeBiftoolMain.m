@@ -1,7 +1,25 @@
-%% DDE-BIFTOOL - Wilson-Cowan Network with Delays
-
 function bifn = ddeBiftoolMain(p)
+% DDEBIFTOOLMAIN  Calculate Saddle-Node bifurcations, Hopf bifurcations and
+% Saddle-Node bifurcations of periodic orbits in a two-parameter space.
+%   Input:
+%       p:  structure containing model parameters of the form {\alpha,
+%           \beta, a, b, c, d, \theta_{u}, \theta_{v}, \tau_{1}, \tau_{2}}.
+%   Output:
+%       bifn: structure containing sn1 (structure containing x and y
+%           coordinates for the locations of the first saddle-node
+%           bifurcation line in the two parameter space), sn2 (structure
+%           containing x and y coordinates for the locations of the second
+%           saddle-node bifurcation line in the two parameter space), hopf
+%           (structure containing x and y coordinates for the locations of
+%           the hopf bifurcation line in the two parameter space), snpo1
+%           (structure containing x and y coordinates for the locations of
+%           the first saddle-node bifurcation of periodic orbits line in
+%           the two parameter space), snpo2 (structure containing x and y
+%           coordinates for the locations of the second saddle-node
+%           bifurcation of periodic orbits line in the two parameter
+%           space).
 
+%% Initialise System
 addpath('helper_functions/ddebiftool/');
 addpath('helper_functions/ddebiftool_utilities/');
 addpath('helper_functions/ddebiftool_extra_psol/');
@@ -14,12 +32,13 @@ sys_rhs = @(xx, par) [ ...
     -xx(1,1) + 1 / (1 + exp(-par(2) * (par(7) + par(3) * xx(1,2) + par(4) * xx(2,2)))); ...
     par(1) * (-xx(2,1) + 1 / (1 + exp(-par(2) * (par(8) + par(5) * xx(1,2) + par(6) * xx(2,2)))))];
 
-% Delays and Continuation Parameters
+% Define delays and continuation parameters
 sys_tau = @() 9;
 ind_theta_u = 7;
 ind_taus = 9;
 
-funcs=set_funcs( ...
+% Define system functions
+funcs = set_funcs( ...
     'sys_rhs', sys_rhs, ...
     'sys_tau', sys_tau);
 
@@ -28,7 +47,10 @@ funcs=set_funcs( ...
 stst.kind='stst';
 stst.parameter=[p.alpha, p.beta, p.a, p.b, p.c, p.d, ...
     p.theta_u, p.theta_v, p.tau_1];
-stst.x=[0.698598941633828;0]; % Extract [u, v] from odeSim endpoint
+
+% Extract u and v values from odeSim endpoint
+[stst_u, stst_v] = odeSim(p);
+stst.x=[stst_u; stst_v];
 
 % Initialise point correction method
 method = df_mthod(funcs, 'stst');
@@ -355,7 +377,7 @@ branch7 = br_contn(foldfuncs, branch7, 100);
 branch7 = br_rvers(branch7);
 branch7 = br_contn(foldfuncs, branch7, 100);
 
-%% Construct Final Figure
+%% Extract Data for Final Figure
 % Get deafult plotting measures: x = theta_u, y = tau
 [xm, ym] = df_measr(0, branch2);
 

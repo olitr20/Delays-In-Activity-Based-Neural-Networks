@@ -1,7 +1,29 @@
-%% DDE-BIFTOOL - Wilson-Cowan Network with Delays
-
 function [stst, po] = ddeBiftoolSection(p)
+% DDEBIFTOOLSECTION  Calculate steady state and periodic orbit branches
+% in a two parameter space.
+%   Input:
+%       p:  structure containing model parameters of the form {\alpha,
+%           \beta, a, b, c, d, \theta_{u}, \theta_{v}, \tau_{1}, \tau_{2}}.
+%   Output:
+%       stst: structure containing kind (type of point, 'stst'), parameter
+%           (parameter values used for continuation), x (initial guess for
+%           steady state location), stability (calculated stability of
+%           every point along steady state branch), stable1 (structure
+%           containing x and y values of the first stable section of the
+%           steady state branch in the two parameter space), unstable
+%           (structure containing x and y values of the unstable section of
+%           the steady state branch in the two parameter space), stable2
+%           (structure containing x and y values of the second stable
+%           section of the steady state branch in the two parameter space.
+%       po: structure containing stable1 (structure containing x and y
+%           values of the first stable section of the periodic orbit branch
+%           in the two parameter space), unstable (structure containing x
+%           and y values of the unstable section of the periodic orbit
+%           branch in the two parameter space), stable2 (structure
+%           containing x and y values of the second stable section of the
+%           periodic orbit branch in the two parameter space.
 
+%% Initislise System
 addpath('helper_functions/ddebiftool/');
 addpath('helper_functions/ddebiftool_utilities/');
 addpath('helper_functions/ddebiftool_extra_psol/');
@@ -19,7 +41,8 @@ sys_tau = @() 9;
 ind_theta_u = 7;
 ind_taus = 9;
 
-funcs=set_funcs( ...
+% Define system functions
+funcs = set_funcs( ...
     'sys_rhs', sys_rhs, ...
     'sys_tau', sys_tau);
 
@@ -35,7 +58,10 @@ end
 stst.kind='stst';
 stst.parameter=[p.alpha, p.beta, p.a, p.b, p.c, p.d, ...
     p.theta_u, p.theta_v, p.tau_1];
-stst.x=[0.698598941633828;0]; % Extract [u, v] from odeSim endpoint
+
+% Extract u and v values from odeSim endpoint
+[stst_u, stst_v] = odeSim(p);
+stst.x=[stst_u; stst_v];
 
 method = df_mthod(funcs, 'stst');
 method.stability.minimal_real_part = -2;
@@ -153,7 +179,7 @@ po_y = max(po_y, [], 2); % find maximum u
 branch2.method.stability.minimal_real_part = -2;
 branch2 = br_stabl(funcs, branch2, 0, 0);
 
-%% Construct Final Figure
+%% Extract Data for Final Figure
 % Get default measures for branch 1
 [xm, ym] = df_measr(0, branch1);
 
@@ -168,10 +194,6 @@ ind_hopf_1 = find(arrayfun(@(x) real(x.stability.l0(1)) > 0, ...
 % Locate second hopf bifurcation
 ind_hopf_2 = find(arrayfun(@(x) real(x.stability.l0(1)) > 0, ...
     branch1.point), 1, 'last');
-
-% if isempty(ind_hopf_1)
-%     ind_hopf_1 = length(branch1.point);
-% end
 
 % Extract first stable section of steady state branch
 stst.stable1.x = stst_x(1:ind_hopf_1);
@@ -233,9 +255,9 @@ if ind_hopf_po_1 ~= length(branch2.point) % account for no instability
 end
 
 %% --------------------------------------------------------------------- %%
-% -------------------------- regularise(x, y) --------------------------- %
+% --------------------------- regularise(x,y) --------------------------- %
     % Define the inverse sigmoid function, for z = u,v
-    function [reg_x, reg_y] = regularise(x, y)
+    function [reg_x, reg_y] = regularise(x,y)
         % Calculate cumulative euclidean distances
         dist = sqrt(diff(x).^2 + diff(y).^2);
         cum_dist = [0; cumsum(dist)];

@@ -1,14 +1,18 @@
 function lambda_max = lyapunovExponent(ddefun, p, ptbn, int)
-% lyapunovExponent computes the maximum Lyapunov exponent of a dynamical system.
-% 
-% Inputs:
-%   ddefun - Function handle defining the system of DDEs (dx/dt = f(t, x, x(t-tau))).
-%   p      - Structure containing the parameters: tspan, delays, history, and options.
-%   ptbn   - Size of the perturbation (scalar).
-%   int    - Time interval to simulate perturbations for.
+% LYAPUNOVEXPONENT calculate the maximal Lyapunov Exponent of a dynamical
+% system for a given set of parameters.
+%   Inputs:
+%       ddefun: function handle defining the system of delayed differential
+%           equations.
+%       p:  structure containing model parameters of the form {\alpha,
+%           \beta, a, b, c, d, \theta_{u}, \theta_{v}, \tau_{1}, \tau_{2},
+%           delays, history, timespan, options}.
+%       ptbn: size of the perturbation.
+%       int: time interval to simulate perturbations for.
 %
-% Output:
-%   lambda_max - Approximation of the maximum Lyapunov exponent.
+%   Output:
+%       lambda_max - Approximation of the maximal Lyapunov exponent for a
+%       given set of parameters passed with the function handle ddefun.
 
     % Unpack parameters
     tspan = p.tspan;

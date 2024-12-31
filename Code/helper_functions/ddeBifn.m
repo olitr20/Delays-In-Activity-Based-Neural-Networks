@@ -1,4 +1,17 @@
 function bifn = ddeBifn(p)
+% DDEBIFN  Calculate hopf bifurcations across a range of values for
+% \tau_{1} and \tau_{2}. Extract omega values for each bifurcation locus.
+%   Input:
+%       p:  structure containing model parameters of the form {\alpha,
+%           \beta, a, b, c, d, \theta_{u}, \theta_{v}, u, v, \tau_{1}
+%           range, \tau_{2} range, \omega range}.
+%   Output:
+%       bifn: structure containing sols (hopf bifurcation loci), omegas
+%       (frequency at a given hopf bifurcation locus), line_1 (first
+%       continuous section of hopf bifurcations), line_1a (omega values for
+%       this section), line_2 (second continuous section of hopf
+%       bifurcations), line_2a (omega values for this section).
+
     % Calculate k1, k2, and k3 based on u* and v*
     kappa.k1 = p.a * p.beta * p.u * (1 - p.u);
     kappa.k2 = p.d * p.beta * p.v * (1 - p.v);

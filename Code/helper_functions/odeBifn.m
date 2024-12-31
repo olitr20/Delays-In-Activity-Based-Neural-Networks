@@ -1,9 +1,9 @@
 function [hopf, sn, bt] = odeBifn(p)
-% BIFN_ODE  Calculate hopf, saddle-node, and bogdanov-takens bifurcations
+% ODEBIFN  Calculate hopf, saddle-node, and bogdanov-takens bifurcations
 % in the \theta_{u}, \theta_{v} plane.
 %   Input:
 %       p:  structure containing model parameters of the form {\alpha,
-%           \beta, a, b, c, d}
+%           \beta, a, b, c, d}.
 %   Output:
 %       hopf: structure containing us, v_plus, v_minus, theta. Theta is a
 %           structure containing uP (u plus), uM (u minus), vP (v plus) and
@@ -58,8 +58,8 @@ function [hopf, sn, bt] = odeBifn(p)
     % Locate bogdanov-takens bifurcations
     try
         options = optimoptions('fsolve','Display','none','Algorithm','levenberg-marquardt');
-        bt.us(1) = fsolve(@systemEquations, 0, options);
-        bt.us(2) = fsolve(@systemEquations, 1, options);
+        bt.us(1) = fsolve(@uTraceDet, 0, options);
+        bt.us(2) = fsolve(@uTraceDet, 1, options);
 
         % Calculate bogdanov-takens bifurcations
         [bt.v_plus, bt.v_minus] = vTrace(bt.us,p);
@@ -71,14 +71,14 @@ function [hopf, sn, bt] = odeBifn(p)
     end
 
 %% --------------------------------------------------------------------- %%
-% ----------------------------- f_inv(x,p) ------------------------------ %
+% ----------------------------- f_inv(z,p) ------------------------------ %
     % Define the inverse sigmoid function, for z = u,v
     function f = f_inv(z,p)
         f = (1 ./ p.beta) .* log(z ./ (1 - z));
     end
 
-% ---------------------- Hopf Fixed Point Equation ---------------------- %
-    % Define the fixed point equation derived from Tr L
+% ---------------------------- vTrace(us,p) ----------------------------- %
+    % Define the conditions for a hopf bifurcation
     function [v_trace_plus, v_trace_minus] = vTrace(us,p)
         sqrt_term = 1 - (4 .* ...
             (((1 + p.alpha) ./ p.beta) - p.a .* us .* (1 - us))) ...
@@ -87,8 +87,8 @@ function [hopf, sn, bt] = odeBifn(p)
         v_trace_minus = (1 - sqrt(sqrt_term)) ./ 2;
     end
 
-% ------------------ Saddle Node Fixed Point Equation ------------------- %
-    % Define the fixed point equation derived from Det L
+% ----------------------------- vDet(us,p) ------------------------------ %
+    % Define the conditions for a saddle-node bifurcation
     function [v_det_plus, v_det_minus] = vDet(us,p)
         gamma = (p.d .* p.beta) - (p.beta .^ 2) .* ...
             (p.a .* p.d - p.b * p.c) .* us .* (1 - us);
@@ -99,18 +99,18 @@ function [hopf, sn, bt] = odeBifn(p)
         v_det_minus = (gamma - sqrt(sqrt_term)) ./ (2 .* gamma);
     end
 
-% ---------------- Bogdanov-Takens Fixed Point Equation ----------------- %
-    % Define the fixed point equation derived from Det L
-    function F = systemEquations(us)
+% ---------------------------- uTraceDet(us) ---------------------------- %
+    % Define the conditions for a bogdanov-takens bifurcation
+    function bt_us = uTraceDet(us)
         [v_trace_plus, v_trace_minus] = vTrace(us, p);
         [v_det_plus, v_det_minus] = vDet(us, p);
 
-        F(1) = v_trace_plus - v_det_minus;  % Match one branch
-        F(2) = v_trace_minus - v_det_plus;  % Match the other branch
+        bt_us(1) = v_trace_plus - v_det_minus;  % Match one branch
+        bt_us(2) = v_trace_minus - v_det_plus;  % Match the other branch
     end
 
-% ----------------------- Parameterised Equations ----------------------- %
-    % Define the pair of equations for θ_u and θ_v
+% ------------------- fixed-Point(us,p,vPlus,vMinus) -------------------- %
+    % Define the fixed point equations for \theta_{u} and \theta_{v}
     function theta = fixedPoint(us,p,vPlus,vMinus)
         theta.uP = f_inv(us,p) - (p.a .* us) - (p.b .* vPlus);
         theta.uM = f_inv(us,p) - (p.a .* us) - (p.b .* vMinus);

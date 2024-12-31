@@ -1,35 +1,28 @@
-%% ODE Simulation
-% Select Parameters
-p.alpha = 1; p.beta = 60;
-p.a = -1; p.b = -0.4;
-p.c = -1; p.d = 0;
-p.theta_u = 0.65; p.theta_v = 0.5;
+function [stst_u, stst_v] = odeSim(p)
+% ODESIM  Simulate a system of ordinary differential equations.
+%   Input:
+%       p:  structure containing model parameters of the form {\alpha,
+%           \beta, a, b, c, d, \theta_{u}, \theta_{v}}.
+%   Output:
+%       sol: solutions of the delayed differential simulation over a
+%           specified period of time.
+%       nullclines: structure containing calculated u- and v-nullclines
+%           along with corresponding ranges for u and v.
 
-% Define simulation parameters
-xmax = 30; xstep = 0.1; % x range
-tmax = 1500; % max simulation time
-smpl = 5; % initial value sample rate
-[X,Y] = meshgrid(0:smpl:xmax);
-% x0 = [X(:), Y(:)]; clear X Y
-x0 = [1; 0];
-tspan = [0 tmax];
+    % Define simulation parameters
+    x0 = [1; 0]; % initial steady state guess
+    tspan = [0 60]; % simulation time span
+    
+    [~,xode] = ode23s(@(t, x) odefun(t, x, p), tspan, x0);
+    
+    stst_u = xode(end,1);
+    stst_v = xode(end,2);
 
-[t,xode] = ode23s(@(t, x) odefun(t, x, p), tspan, x0);
-
-fprintf('u = %.15f\n', xode(end,1));
-fprintf('v = %.15f\n', xode(end,2));
 %% --------------------------------------------------------------------- %%
-% ------------------------------- f(x,p) -------------------------------- %
+% ------------------------------- f(z,p) -------------------------------- %
     % Define the inverse sigmoid function, for z = u,v
-    function f = f(z)
-        % f = heaviside(z);
-        f = 1 ./ (1 + exp(-600 * z));
-    end
-
-% ----------------------------- f_inv(x,p) ------------------------------ %
-    % Define the inverse sigmoid function, for z = u,v
-    function f = f_inv(z,p)
-        f = (1 ./ p.beta) .* log(z ./ (1 - z));
+    function f = f(z,p)
+        f = 1 ./ (1 + exp(-p.beta * z));
     end
 
 % ---------------------------- odefun(t,y,Z) ---------------------------- %
@@ -37,14 +30,9 @@ fprintf('v = %.15f\n', xode(end,2));
         u = x(1);
         v = x(2);
 
-        dudt = -u + f(p.theta_u + p.a .* u + p.b .* v);
-        dvdt = p.alpha .* (-v + f(p.theta_v + p.c .* u + p.d .* v));
+        dudt = -u + f(p.theta_u + p.a .* u + p.b .* v, p);
+        dvdt = p.alpha .* (-v + f(p.theta_v + p.c .* u + p.d .* v, p));
     
         d = [dudt; dvdt];
     end
-
-% ---------------------------- getNullclines(t,y,Z) ---------------------------- %
-    function nullclines = getNullclines(u_range, v_range, p)
-        nullclines.u = (f_inv(v_range,p) - p.theta_v - (p.d .* v_range)) ./ p.c;
-        nullclines.v = (f_inv(u_range,p) - p.theta_u - (p.a .* u_range)) ./ p.b;
-    end
+end
