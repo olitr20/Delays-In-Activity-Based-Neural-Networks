@@ -187,7 +187,7 @@ print(gcf, '../Figures/Figure_2.png', '-dpng', '-r300');
 
 %% Figure 3 Replicate
 % Define Model Parameters
-p.alpha = 1; p.beta = 700; % high \beta approximates heaviside
+p.alpha = 1; p.beta = 600; % high \beta approximates heaviside
 p.a = -1; p.b = -0.4;
 p.c = -0.4; p.d = -1;
 p.theta_u = 0.7; p.theta_v = 0.7;
@@ -196,15 +196,19 @@ p.tau1 = 1; p.tau2 = 1.4;
 % Define DDE parameters
 p.tspan = [0 15];
 p.delays = [p.tau1 p.tau2];
-p.history1 = [0.37 0.8];
-p.history2 = [0.2 0.8];
 p.options = ddeset('reltol', 1e-5);
 
 % Solve DDE
-sol.Synchronous = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
-    p.delays,p.history1,p.tspan,p.options);
-sol.AntiSynchronous = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
-    p.delays,p.history2,p.tspan,p.options);
+% sol.Synchronous = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
+%     p.delays,p.history1,p.tspan,p.options);
+% sol.AntiSynchronous = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
+%     p.delays,p.history2,p.tspan,p.options);
+
+p.history = [0.37 0.8];
+sol.Synchronous = ddeSim(p);
+
+p.history = [0.2 0.8];
+sol.AntiSynchronous = ddeSim(p);
 
 % Initilaise figure 3
 figure(3); clf;
@@ -279,19 +283,19 @@ p.options = ddeset('reltol', 1e-5);
 
 p.tau1 = 0.5; p.tau2 = 1;
 p.delays = [p.tau1 p.tau2];
-[sol1, nullclines] = ddeSim(p);
+[sol.sim_1, nullclines] = ddeSim(p);
 
 p.tau1 = 3; p.tau2 = 1;
 p.delays = [p.tau1 p.tau2];
-sol2 = ddeSim(p);
+sol.sim_2 = ddeSim(p);
 
 p.tau1 = 6; p.tau2 = 1;
 p.delays = [p.tau1 p.tau2];
-sol3 = ddeSim(p);
+sol.sim_3 = ddeSim(p);
 
 p.tau1 = 10; p.tau2 = 1;
 p.delays = [p.tau1 p.tau2];
-sol4 = ddeSim(p);
+sol.sim_4 = ddeSim(p);
 
 % Initialise figure 4
 figure(4); clf;
@@ -307,9 +311,9 @@ plot(nullclines.u_range, nullclines.v_null, ...
     '-', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot solution
-plot(sol1.y(1,1), sol1.y(2,1), ...
+plot(sol.sim_1.y(1,1), sol.sim_1.y(2,1), ...
     '.', 'color', '#378c47', 'markersize', 12);
-plot(sol1.y(1,:), sol1.y(2,:), ...
+plot(sol.sim_1.y(1,:), sol.sim_1.y(2,:), ...
     'color', '#378c47', 'linewidth', 1);
 
 % Format axes
@@ -336,9 +340,9 @@ plot(nullclines.u_range, nullclines.v_null, ...
     '-', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot solution
-plot(sol2.y(1,1), sol2.y(2,1), ...
+plot(sol.sim_2.y(1,1), sol.sim_2.y(2,1), ...
     '.', 'color', '#378c47', 'markersize', 12);
-plot(sol2.y(1,:), sol2.y(2,:), ...
+plot(sol.sim_2.y(1,:), sol.sim_2.y(2,:), ...
     'color', '#378c47', 'linewidth', 1);
 
 % Format axes
@@ -362,9 +366,9 @@ plot(nullclines.u_range, nullclines.v_null, ...
     '-', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot solution
-plot(sol3.y(1,1), sol3.y(2,1), ...
+plot(sol.sim_3.y(1,1), sol.sim_3.y(2,1), ...
     '.', 'color', '#378c47', 'markersize', 12);
-plot(sol3.y(1,:), sol3.y(2,:), ...
+plot(sol.sim_3.y(1,:), sol.sim_3.y(2,:), ...
     'color', '#378c47', 'linewidth', 1);
 
 % Format axes
@@ -392,9 +396,9 @@ plot(nullclines.u_range, nullclines.v_null, ...
     '-', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot solution
-plot(sol4.y(1,1), sol4.y(2,1), ...
+plot(sol.sim_4.y(1,1), sol.sim_4.y(2,1), ...
     '.', 'color', '#378c47', 'markersize', 12);
-plot(sol4.y(1,:), sol4.y(2,:), ...
+plot(sol.sim_4.y(1,:), sol.sim_4.y(2,:), ...
     'color', '#378c47', 'linewidth', 1);
 
 % Format axes
@@ -589,8 +593,9 @@ p.history = [0.074 0.077];
 p.options = ddeset('reltol', 1e-5);
 
 % Solve DDE
-sol.Chaotic = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
-    p.delays,p.history,p.tspan,p.options);
+% sol.Chaotic = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
+%     p.delays,p.history,p.tspan,p.options);
+sol.Chaotic = ddeSim(p);
 
 % Initialise figure 4
 figure(8);
@@ -632,8 +637,9 @@ p.history = [0.074 0.077];
 p.options = ddeset('reltol', 1e-5);
 
 % Solve DDE
-sol.QuasiPeriodic = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
-    p.delays,p.history,p.tspan,p.options);
+% sol.QuasiPeriodic = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
+%     p.delays,p.history,p.tspan,p.options);
+sol.QuasiPeriodic = ddeSim(p);
 
 % Initialise figure 4
 figure(9);
@@ -725,22 +731,3 @@ set(gca,'fontsize', 14, 'fontname', 'times');
 print(gcf, '../Figures/Figure_8.png', '-dpng', '-r300');
 
 clear astep bstep
-
-%% --------------------------------------------------------------------- %%
-% ----------------------------- f_inv(z,p) ------------------------------ %
-    % Define the inverse sigmoid function, for z = u,v
-    function f = f_inv(z,p)
-        f = (1 ./ p.beta) .* log(z ./ (1 - z));
-    end
-
-% --------------------------- ddefun(~,y,Z,p) --------------------------- %
-    function d = ddefun(~,y,Z,p)
-        dudt = -y(1) + ...
-            f_inv(p.theta_u + p.a .* Z(1,1) + ...
-            p.b .* Z(2,2),p);
-        dvdt = p.alpha .* ...
-            (-y(2) + f_inv(p.theta_v + p.c .* Z(1,2) + ...
-            p.d .* Z(2,1),p));
-    
-        d = [dudt; dvdt];
-    end
