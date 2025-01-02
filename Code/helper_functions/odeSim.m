@@ -1,10 +1,14 @@
-function [stst_u, stst_v, xode, nullclines] = odeSim(p)
+function [stst_u, stst_v, sol, nullclines] = odeSim(p)
 % ODESIM  Simulate a system of ordinary differential equations.
 %   Input:
 %       p:  structure containing model parameters of the form {\alpha,
 %           \beta, a, b, c, d, \theta_{u}, \theta_{v}}.
 %   Output:
-%       sol: solutions of the delayed differential simulation over a
+%       stst_u: u value of the steady state, if present, found by analysing
+%           the final portion of xode for minimal movement.
+%       stst_v: v value of the steady state, if present, found by analysing
+%           the final portion of xode for minimal movement.
+%       sol: solutions of the ordinary differential simulation over a
 %           specified period of time.
 %       nullclines: structure containing calculated u- and v-nullclines
 %           along with corresponding ranges for u and v.
@@ -14,11 +18,19 @@ function [stst_u, stst_v, xode, nullclines] = odeSim(p)
     tspan = [0 60]; % simulation time span
     
     % Simulate system
-    [~,xode] = ode23s(@(t, x) odefun(t, x, p), tspan, x0);
-    
+    [~,sol] = ode23s(@(t, x) odefun(t, x, p), tspan, x0);
+
     % Extract steady states
-    stst_u = xode(end,1);
-    stst_v = xode(end,2);
+    if round(sol(end,:),4) == round(sol(end-1,:),4)
+        stst_u = sol(end,1);
+        stst_v = sol(end,2);
+    else
+        fprintf(['odeSim Warning: No steady state found for parameters: \n' ...
+            '{alpha=%.0f, beta=%.0f, a=%.0f, b=%.0f, c=%.0f, d=%.0f, theta_u=%.1f, theta_v=%.1f}. \n'], ...
+            p.alpha, p.beta, p.a, p.b, p.c, p.d, p.theta_u, p.theta_v)
+        stst_u = [];
+        stst_v = [];
+    end
 
     % Calculate nullclines
     u_range = linspace(0, 1, 1000);
