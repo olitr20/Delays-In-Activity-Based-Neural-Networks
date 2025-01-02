@@ -7,10 +7,10 @@ function bifn = ddeBifn(p)
 %           range, \tau_{2} range, \omega range}.
 %   Output:
 %       bifn: structure containing sols (hopf bifurcation loci), omegas
-%       (frequency at a given hopf bifurcation locus), line_1 (first
-%       continuous section of hopf bifurcations), line_1a (omega values for
-%       this section), line_2 (second continuous section of hopf
-%       bifurcations), line_2a (omega values for this section).
+%           (frequency at a given hopf bifurcation locus), line_1 (first
+%           continuous section of hopf bifurcations), line_1a (omega values
+%           for this section), line_2 (second continuous section of hopf
+%           bifurcations), line_2a (omega values for this section).
 
     % Calculate k1, k2, and k3 based on u* and v*
     kappa.k1 = p.a * p.beta * p.u * (1 - p.u);

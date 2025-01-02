@@ -4,8 +4,8 @@ function [u, v] = calcBias(p)
 %       p:  structure containing model parameters of the form {\alpha,
 %           \beta, a, b, c, d, \theta_{u}, \theta_{v}}.
 %   Output:
-%       u: calculated u value for a specific \theta_{u} and \theta_{v}.
-%       v: calculated v value for a specific \theta_{u} and \theta_{v}.
+%       u:  calculated u value for a specific \theta_{u} and \theta_{v}.
+%       v:  calculated v value for a specific \theta_{u} and \theta_{v}.
     
     sol = fsolve(@bias, [0.5, 0.5], ...
         optimoptions('fsolve', 'Display', 'off'));

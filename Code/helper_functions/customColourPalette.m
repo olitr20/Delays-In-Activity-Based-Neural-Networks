@@ -6,7 +6,7 @@ function c_palette = customColourPalette(colours)
 %           three distinct colours.
 %   Output:
 %       c_palette: A 256x3 numeric array containing decimal rgb values
-%       spanning the range of the three specified colours.
+%           spanning the range of the three specified colours.
 
     rgb = zeros(3,3);
     for i = 1:length(colours)
