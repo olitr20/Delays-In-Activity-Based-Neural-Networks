@@ -69,6 +69,12 @@ plot(sn.theta.uM, sn.theta.vM, 'k', 'linewidth',1.5); % minus values
 plot(bt.theta.uP, bt.theta.vP, 'ro', 'linewidth',1.5,'markersize',12); % plus values
 plot(bt.theta.uM, bt.theta.vM,'ro', 'linewidth',1.5,'markersize',12); % minus values
 
+% Plot simulation points
+plot(-4.1, -7, '*', 'color', '#c74440', 'markersize', 5);
+plot(-3.7, -7, '*', 'color', '#2c70b3', 'markersize', 5);
+plot(-3.3, -7, '*', 'color', '#378c47', 'markersize', 5);
+plot(-2.9, -7, '*', 'color', '#f77e1b', 'markersize', 5);
+
 % Format axes
 xlabel("$\theta_{\mathit{u}}$", 'interpreter', 'latex');
 ylabel("$\theta_{\mathit{v}}$", 'rotation', 0, 'interpreter', 'latex');
@@ -90,6 +96,140 @@ text(5, -4, "SN", 'fontsize', 14, 'fontname', 'times');
 % Save figure
 print(gcf, '../Figures/Figure_1b.png', '-dpng', '-r300');
 
+%% Simulate ODE System Around Bifurcation Lines
+% Define Model Parameters
+p.alpha = 1; p.beta = 1;
+p.a = 10; p.b = -10;
+p.c = 10; p.d = 2;
+
+% Initialise figure 2
+figure(2); clf;
+tiledlayout(2,2,'tilespacing','compact','padding','loose');
+
+% Subplot 1
+nexttile; hold on;
+
+% Calculate nullclines and simulate
+p.theta_u = -4.1; p.theta_v = -7;
+[~, ~, xode, nullclines] = odeSim(p);
+
+% Plot label
+plot(-0.04, 0.73, '*', 'color', '#c74440', 'markersize', 12);
+plot(-0.04, 0.73, 'square', 'color', '#c74440', 'markersize', 20);
+
+% Plot nullclines
+plot(nullclines.u_null, nullclines.v_range, ...
+    '-', 'color', '#c74440', 'linewidth', 1.5);
+plot(nullclines.u_range, nullclines.v_null, ...
+    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+
+% Plot simulation
+plot(xode(:,1), xode(:,2), ...
+    '-', 'color', '#378c47', 'linewidth', 1.5);
+plot(xode(end,1), xode(end,2), ...
+    '.', 'color', 'k', 'markersize', 12);
+
+% Format axes
+ylabel("$\mathit{v}$", 'rotation', 0, 'interpreter', 'latex');
+
+xlim([-0.1 0.8]);
+ylim([-0.1 0.8]);
+
+set(gca,'fontsize', 14, 'fontname', 'times');
+
+% Subplot 2
+nexttile; hold on;
+
+% Calculate nullclines and simulate
+p.theta_u = -3.7; p.theta_v = -7;
+[~, ~, xode, nullclines] = odeSim(p);
+
+% Plot label
+plot(-0.04, 0.73, '*', 'color', '#2c70b3', 'markersize', 12);
+plot(-0.04, 0.73, 'square', 'color', '#2c70b3', 'markersize', 20);
+
+% Plot nullclines
+plot(nullclines.u_null, nullclines.v_range, ...
+    '-', 'color', '#c74440', 'linewidth', 1.5);
+plot(nullclines.u_range, nullclines.v_null, ...
+    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+
+% Plot simulation
+plot(xode(:,1), xode(:,2), ...
+    '-', 'color', '#378c47', 'linewidth', 1.5);
+plot(xode(end,1), xode(end,2), ...
+    '.', 'color', 'k', 'markersize', 12);
+
+% Format axes
+xlim([-0.1 0.8]);
+ylim([-0.1 0.8]);
+
+set(gca,'fontsize', 14, 'fontname', 'times');
+
+% Subplot 3
+nexttile; hold on;
+
+% Calculate nullclines and simulate
+p.theta_u = -3.3; p.theta_v = -7;
+[~, ~, xode, nullclines] = odeSim(p);
+
+% Plot label
+plot(-0.04, 0.73, '*', 'color', '#378c47', 'markersize', 12);
+plot(-0.04, 0.73, 'square', 'color', '#378c47', 'markersize', 20);
+
+% Plot nullclines
+plot(nullclines.u_null, nullclines.v_range, ...
+    '-', 'color', '#c74440', 'linewidth', 1.5);
+plot(nullclines.u_range, nullclines.v_null, ...
+    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+
+% Plot simulation
+plot(xode(:,1), xode(:,2), ...
+    '-', 'color', '#378c47', 'linewidth', 1.5);
+plot(xode(end,1), xode(end,2), ...
+    '.', 'color', 'k', 'markersize', 12);
+
+% Format axes
+xlabel("$\mathit{u}$", 'interpreter', 'latex');
+ylabel("$\mathit{v}$", 'rotation', 0, 'interpreter', 'latex');
+
+xlim([-0.1 0.8]);
+ylim([-0.1 0.8]);
+
+set(gca,'fontsize', 14, 'fontname', 'times');
+
+% Subplot 4
+nexttile; hold on;
+
+% Calculate nullclines and simulate
+p.theta_u = -2.9; p.theta_v = -7;
+[~, ~, xode, nullclines] = odeSim(p);
+
+% Plot label
+plot(-0.04, 0.73, '*', 'color', '#f77e1b', 'markersize', 12);
+plot(-0.04, 0.73, 'square', 'color', '#f77e1b', 'markersize', 20);
+
+% Plot nullclines
+plot(nullclines.u_null, nullclines.v_range, ...
+    '-', 'color', '#c74440', 'linewidth', 1.5);
+plot(nullclines.u_range, nullclines.v_null, ...
+    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+
+% Plot simulation
+plot(xode(:,1), xode(:,2), ...
+    '-', 'color', '#378c47', 'linewidth', 1.5);
+
+% Format axes
+xlabel("$\mathit{u}$", 'interpreter', 'latex');
+
+xlim([-0.1 0.8]);
+ylim([-0.1 0.8]);
+
+set(gca,'fontsize', 14, 'fontname', 'times');
+
+% Save figure
+print(gcf, '../Figures/Figure_2.png', '-dpng', '-r300');
+
 %% Figure 2 Replicate
 % Define Model Parameters
 p.alpha = 1; p.beta = 1;
@@ -109,8 +249,8 @@ p.omega_vals = linspace(0, 2.5, 7); % Omega range
 % Calculate hopf bifurcation lines in \tau_{1} and \tau_{2}
 bifn = ddeBifn(p);
 
-% Initialise figure 2
-figure(2);
+% Initialise figure 3
+figure(3);
 clf; hold on;
 
 % Define a custom colour palette
@@ -154,6 +294,12 @@ for i = 1:length(bifn.line_2)-1
 end
 clear i x_seg y_seg
 
+% Plot simulation points
+plot(0.5, 1, '*', 'color', '#c74440', 'markersize', 5);
+plot(3, 1, '*', 'color', '#2c70b3', 'markersize', 5);
+plot(6, 1, '*', 'color', '#378c47', 'markersize', 5);
+plot(10, 1, '*', 'color', '#f77e1b', 'markersize', 5);
+
 % Format axes
 xlabel("\tau_1");
 ylabel("\tau_2", 'rotation', 0);
@@ -175,15 +321,179 @@ colorbar;
 clear omega
 
 % Add annotations
-annotation('textbox',[0.1746 0.5762 0.1219 0.0619],'string',"unstable", ...
+annotation('textbox',[0.1696 0.4562 0.1219 0.0619],'string',"unstable", ...
     'rotation',71.5,'fontsize',14,'fontname','times','edgecolor','none');
-annotation('textbox',[0.2728 0.5262 0.0969 0.0619],'string',"stable", ...
+annotation('textbox',[0.2428 0.4062 0.0969 0.0619],'string',"stable", ...
     'rotation',71.5,'fontsize',14,'fontname','times','edgecolor','none');
 annotation('textbox',[0.4781 0.3905 0.1219 0.0619],'string',"unstable", ...
     'fontsize',14,'fontname','times','edgecolor','none');
 
 % Save figure
-print(gcf, '../Figures/Figure_2.png', '-dpng', '-r300');
+print(gcf, '../Figures/Figure_3.png', '-dpng', '-r300');
+
+%% Simulate DDE System around Bifurcation Lines
+% Define Model Parameters
+p.alpha = 1; p.beta = 1;
+p.a = 10; p.b = -10;
+p.c = 10; p.d = 2;
+p.theta_u = -2; p.theta_v = -4;
+
+% Define DDE parameters
+p.tspan = [0 50];
+p.history = [0.6 0.7];
+p.options = ddeset('reltol', 1e-5);
+
+p.tau1 = 0.5; p.tau2 = 1;
+p.delays = [p.tau1 p.tau2];
+[sol.sim_1, nullclines] = ddeSim(p);
+
+p.tau1 = 3; p.tau2 = 1;
+p.delays = [p.tau1 p.tau2];
+sol.sim_2 = ddeSim(p);
+
+p.tau1 = 6; p.tau2 = 1;
+p.delays = [p.tau1 p.tau2];
+sol.sim_3 = ddeSim(p);
+
+p.tau1 = 10; p.tau2 = 1;
+p.delays = [p.tau1 p.tau2];
+sol.sim_4 = ddeSim(p);
+
+% Initialise figure 4
+figure(4); clf;
+tiledlayout(2, 2, 'tilespacing', 'compact', 'padding', 'loose');
+
+% First subplot
+nexttile; hold on;
+
+% Plot nullclines
+plot(nullclines.u_null, nullclines.v_range, ...
+    '-', 'color', '#c74440', 'linewidth', 1.5);
+plot(nullclines.u_range, nullclines.v_null, ...
+    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+
+% Plot solution
+plot(sol.sim_1.y(1,1), sol.sim_1.y(2,1), ...
+    '.', 'color', '#378c47', 'markersize', 12);
+plot(sol.sim_1.y(1,:), sol.sim_1.y(2,:), ...
+    'color', '#378c47', 'linewidth', 1);
+
+% Plot label
+plot(0.95, 0.94, '*', 'color', '#c74440', 'markersize', 12);
+plot(0.95, 0.94, 'square', 'color', '#c74440', 'markersize', 20);
+
+% Format axes
+ylabel("$\mathit{v}$", 'interpreter', 'latex', 'rotation', 0, ...
+    'position', [-0.2, 0.5, -1], 'verticalalignment', 'middle');
+
+xlim([0 1]);
+xticks(0:0.2:1);
+xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+
+ylim([0 1]);
+yticks(0:0.2:1);
+yticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+
+set(gca,'fontsize', 14, 'fontname', 'times');
+
+% Second subplot
+nexttile; hold on;
+
+% Plot nullclines
+plot(nullclines.u_null, nullclines.v_range, ...
+    '-', 'color', '#c74440', 'linewidth', 1.5);
+plot(nullclines.u_range, nullclines.v_null, ...
+    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+
+% Plot solution
+plot(sol.sim_2.y(1,1), sol.sim_2.y(2,1), ...
+    '.', 'color', '#378c47', 'markersize', 12);
+plot(sol.sim_2.y(1,:), sol.sim_2.y(2,:), ...
+    'color', '#378c47', 'linewidth', 1);
+
+% Plot label
+plot(0.95, 0.94, '*', 'color', '#2c70b3', 'markersize', 12);
+plot(0.95, 0.94, 'square', 'color', '#2c70b3', 'markersize', 20);
+
+% Format axes
+xlim([0 1]);
+xticks(0:0.2:1);
+xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+
+ylim([0 1]);
+yticks(0:0.2:1);
+yticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+
+set(gca,'fontsize', 14, 'fontname', 'times');
+
+% Third subplot
+nexttile; hold on;
+
+% Plot nullclines
+plot(nullclines.u_null, nullclines.v_range, ...
+    '-', 'color', '#c74440', 'linewidth', 1.5);
+plot(nullclines.u_range, nullclines.v_null, ...
+    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+
+% Plot solution
+plot(sol.sim_3.y(1,1), sol.sim_3.y(2,1), ...
+    '.', 'color', '#378c47', 'markersize', 12);
+plot(sol.sim_3.y(1,:), sol.sim_3.y(2,:), ...
+    'color', '#378c47', 'linewidth', 1);
+
+% Plot label
+plot(0.95, 0.94, '*', 'color', '#378c47', 'markersize', 12);
+plot(0.95, 0.94, 'square', 'color', '#378c47', 'markersize', 20);
+
+% Format axes
+xlabel("$\mathit{u}$", 'interpreter', 'latex');
+ylabel("$\mathit{v}$", 'interpreter', 'latex', 'rotation', 0, ...
+    'position', [-0.2, 0.5, -1], 'verticalalignment', 'middle');
+
+xlim([0 1]);
+xticks(0:0.2:1);
+xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+
+ylim([0 1]);
+yticks(0:0.2:1);
+yticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+
+set(gca,'fontsize', 14, 'fontname', 'times');
+
+% Fourth subplot
+nexttile; hold on;
+
+% Plot nullclines
+plot(nullclines.u_null, nullclines.v_range, ...
+    '-', 'color', '#c74440', 'linewidth', 1.5);
+plot(nullclines.u_range, nullclines.v_null, ...
+    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+
+% Plot solution
+plot(sol.sim_4.y(1,1), sol.sim_4.y(2,1), ...
+    '.', 'color', '#378c47', 'markersize', 12);
+plot(sol.sim_4.y(1,:), sol.sim_4.y(2,:), ...
+    'color', '#378c47', 'linewidth', 1);
+
+% Plot label
+plot(0.95, 0.94, '*', 'color', '#f77e1b', 'markersize', 12);
+plot(0.95, 0.94, 'square', 'color', '#f77e1b', 'markersize', 20);
+
+% Format axes
+xlabel("$\mathit{u}$", 'interpreter', 'latex');
+
+xlim([0 1]);
+xticks(0:0.2:1);
+xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+
+ylim([0 1]);
+yticks(0:0.2:1);
+yticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
+
+set(gca,'fontsize', 14, 'fontname', 'times');
+
+% Save figure
+print(gcf, '../Figures/Figure_4.png', '-dpng', '-r300');
 
 %% Figure 3 Replicate
 % Define Model Parameters
@@ -210,8 +520,8 @@ sol.Synchronous = ddeSim(p);
 p.history = [0.2 0.8];
 sol.AntiSynchronous = ddeSim(p);
 
-% Initilaise figure 3
-figure(3); clf;
+% Initilaise figure 5
+figure(5); clf;
 tiledlayout(2,1,'tilespacing','compact','padding','loose');
 
 % First subplot
@@ -267,155 +577,7 @@ annotation('textbox',[0.15 0.18 0.0446 0.0536],'string',"$\mathit{v}$", ...
     'fontsize',14,'edgecolor','none','interpreter','latex');
 
 % Save figure
-print(gcf, '../Figures/Figure_3.png', '-dpng', '-r300');
-
-%% Figure 4 - DDE Simulations
-% Define Model Parameters
-p.alpha = 1; p.beta = 1;
-p.a = 10; p.b = -10;
-p.c = 10; p.d = 2;
-p.theta_u = -2; p.theta_v = -4;
-
-% Define DDE parameters
-p.tspan = [0 50];
-p.history = [0.6 0.7];
-p.options = ddeset('reltol', 1e-5);
-
-p.tau1 = 0.5; p.tau2 = 1;
-p.delays = [p.tau1 p.tau2];
-[sol.sim_1, nullclines] = ddeSim(p);
-
-p.tau1 = 3; p.tau2 = 1;
-p.delays = [p.tau1 p.tau2];
-sol.sim_2 = ddeSim(p);
-
-p.tau1 = 6; p.tau2 = 1;
-p.delays = [p.tau1 p.tau2];
-sol.sim_3 = ddeSim(p);
-
-p.tau1 = 10; p.tau2 = 1;
-p.delays = [p.tau1 p.tau2];
-sol.sim_4 = ddeSim(p);
-
-% Initialise figure 4
-figure(4); clf;
-tiledlayout(2, 2, 'tilespacing', 'compact', 'padding', 'loose');
-
-% First subplot
-nexttile; hold on;
-
-% Plot nullclines
-plot(nullclines.u_null, nullclines.v_range, ...
-    '-', 'color', '#c74440', 'linewidth', 1.5);
-plot(nullclines.u_range, nullclines.v_null, ...
-    '-', 'color', '#2c70b3', 'linewidth', 1.5);
-
-% Plot solution
-plot(sol.sim_1.y(1,1), sol.sim_1.y(2,1), ...
-    '.', 'color', '#378c47', 'markersize', 12);
-plot(sol.sim_1.y(1,:), sol.sim_1.y(2,:), ...
-    'color', '#378c47', 'linewidth', 1);
-
-% Format axes
-ylabel("$\mathit{v}$", 'interpreter', 'latex', 'rotation', 0, ...
-    'position', [-0.2, 0.5, -1], 'verticalalignment', 'middle');
-
-xlim([0 1]);
-xticks(0:0.2:1);
-xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
-
-ylim([0 1]);
-yticks(0:0.2:1);
-yticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
-
-set(gca,'fontsize', 14, 'fontname', 'times');
-
-% Second subplot
-nexttile; hold on;
-
-% Plot nullclines
-plot(nullclines.u_null, nullclines.v_range, ...
-    '-', 'color', '#c74440', 'linewidth', 1.5);
-plot(nullclines.u_range, nullclines.v_null, ...
-    '-', 'color', '#2c70b3', 'linewidth', 1.5);
-
-% Plot solution
-plot(sol.sim_2.y(1,1), sol.sim_2.y(2,1), ...
-    '.', 'color', '#378c47', 'markersize', 12);
-plot(sol.sim_2.y(1,:), sol.sim_2.y(2,:), ...
-    'color', '#378c47', 'linewidth', 1);
-
-% Format axes
-xlim([0 1]);
-xticks(0:0.2:1);
-xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
-
-ylim([0 1]);
-yticks(0:0.2:1);
-yticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
-
-set(gca,'fontsize', 14, 'fontname', 'times');
-
-% Third subplot
-nexttile; hold on;
-
-% Plot nullclines
-plot(nullclines.u_null, nullclines.v_range, ...
-    '-', 'color', '#c74440', 'linewidth', 1.5);
-plot(nullclines.u_range, nullclines.v_null, ...
-    '-', 'color', '#2c70b3', 'linewidth', 1.5);
-
-% Plot solution
-plot(sol.sim_3.y(1,1), sol.sim_3.y(2,1), ...
-    '.', 'color', '#378c47', 'markersize', 12);
-plot(sol.sim_3.y(1,:), sol.sim_3.y(2,:), ...
-    'color', '#378c47', 'linewidth', 1);
-
-% Format axes
-xlabel("$\mathit{u}$", 'interpreter', 'latex');
-ylabel("$\mathit{v}$", 'interpreter', 'latex', 'rotation', 0, ...
-    'position', [-0.2, 0.5, -1], 'verticalalignment', 'middle');
-
-xlim([0 1]);
-xticks(0:0.2:1);
-xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
-
-ylim([0 1]);
-yticks(0:0.2:1);
-yticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
-
-set(gca,'fontsize', 14, 'fontname', 'times');
-
-% Fourth subplot
-nexttile; hold on;
-
-% Plot nullclines
-plot(nullclines.u_null, nullclines.v_range, ...
-    '-', 'color', '#c74440', 'linewidth', 1.5);
-plot(nullclines.u_range, nullclines.v_null, ...
-    '-', 'color', '#2c70b3', 'linewidth', 1.5);
-
-% Plot solution
-plot(sol.sim_4.y(1,1), sol.sim_4.y(2,1), ...
-    '.', 'color', '#378c47', 'markersize', 12);
-plot(sol.sim_4.y(1,:), sol.sim_4.y(2,:), ...
-    'color', '#378c47', 'linewidth', 1);
-
-% Format axes
-xlabel("$\mathit{u}$", 'interpreter', 'latex');
-
-xlim([0 1]);
-xticks(0:0.2:1);
-xticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
-
-ylim([0 1]);
-yticks(0:0.2:1);
-yticklabels({'0','0.2','0.4','0.6','0.8','1.0'});
-
-set(gca,'fontsize', 14, 'fontname', 'times');
-
-% Save figure
-print(gcf, '../Figures/Figure_4.png', '-dpng', '-r300');
+print(gcf, '../Figures/Figure_5.png', '-dpng', '-r300');
 
 %% Figure 6 Replicate
 % Define model parameters
@@ -593,11 +755,9 @@ p.history = [0.074 0.077];
 p.options = ddeset('reltol', 1e-5);
 
 % Solve DDE
-% sol.Chaotic = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
-%     p.delays,p.history,p.tspan,p.options);
 sol.Chaotic = ddeSim(p);
 
-% Initialise figure 4
+% Initialise figure 8
 figure(8);
 clf; hold on;
 
@@ -637,11 +797,9 @@ p.history = [0.074 0.077];
 p.options = ddeset('reltol', 1e-5);
 
 % Solve DDE
-% sol.QuasiPeriodic = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
-%     p.delays,p.history,p.tspan,p.options);
 sol.QuasiPeriodic = ddeSim(p);
 
-% Initialise figure 4
+% Initialise figure 9
 figure(9);
 clf; hold on;
 
