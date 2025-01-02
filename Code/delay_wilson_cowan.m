@@ -297,6 +297,10 @@ for i = 1:length(bifn.line_2)-1
 end
 clear i x_seg y_seg
 
+% Plot label
+plot(0.4, 1.44, '*', 'color', 'k', 'markersize', 12);
+plot(0.4, 1.44, 'square', 'color', 'k', 'markersize', 20);
+
 % Plot simulation points
 plot(0.5, 1, '*', 'color', '#c74440', 'markersize', 5);
 plot(3, 1, '*', 'color', '#2c70b3', 'markersize', 5);
