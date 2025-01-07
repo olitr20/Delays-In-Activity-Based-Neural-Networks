@@ -106,7 +106,7 @@ p.a = 10; p.b = -10;
 p.c = 10; p.d = 2;
 
 % Define simulation parameters
-p.tspan = [0 60]; p.history = [0.7; 0.1];
+p.tspan = [0 60]; p.history = [0.7 0.1];
 
 % Initialise figure 2
 figure(2); clf;
@@ -268,7 +268,6 @@ figure(3);
 clf; hold on;
 
 % Define a custom colour palette
-% p.c_palette = customColourPalette(["f77e1b"; "2c70b3"; "c74440"]);
 p.c_palette = customColourPalette(["000000"; "f77e1b"]);
 
 % Define omega range
@@ -309,10 +308,6 @@ for i = 1:length(bifn.line_2)-1
 end
 clear i x_seg y_seg
 
-% Plot label
-plot(0.4, 1.44, '*', 'color', 'k', 'markersize', 12);
-plot(0.4, 1.44, 'square', 'color', 'k', 'markersize', 20);
-
 % Plot simulation points
 plot(0.5, 1, '*', 'color', '#c74440', 'markersize', 5);
 plot(3, 1, '*', 'color', '#2c70b3', 'markersize', 5);
@@ -340,12 +335,47 @@ colorbar;
 clear omega
 
 % Add annotations
-annotation('textbox',[0.1696 0.4562 0.1219 0.0619],'string',"unstable", ...
+annotation('textbox',[0.20 0.71 0.1219 0.0619],'string',"unstable", ...
     'rotation',71.5,'fontsize',14,'fontname','times','edgecolor','none');
-annotation('textbox',[0.2428 0.4062 0.0969 0.0619],'string',"stable", ...
+annotation('textbox',[0.31 0.72 0.0969 0.0619],'string',"stable", ...
     'rotation',71.5,'fontsize',14,'fontname','times','edgecolor','none');
-annotation('textbox',[0.4781 0.3905 0.1219 0.0619],'string',"unstable", ...
+annotation('textbox',[0.50 0.75 0.1219 0.0619],'string',"unstable", ...
     'fontsize',14,'fontname','times','edgecolor','none');
+
+% Add inset with ode simulation
+axes('Position',[0.49 0.27 0.3 0.3]);
+box on; hold on;
+
+% Calculate nullclines and simulate ode system
+p.tspan = [0 60]; p.history = [0.6 0.7];
+[~, ~, sol.ode_sim_5, nullclines] = odeSim(p);
+
+% Plot label
+plot(0.065, 0.91, '*', 'color', 'k', 'markersize', 12);
+plot(0.065, 0.91, 'square', 'color', 'k', 'markersize', 20);
+
+% Plot nullclines
+plot(nullclines.u_null, nullclines.v_range, ...
+    '-', 'color', '#c74440', 'linewidth', 1.5);
+plot(nullclines.u_range, nullclines.v_null, ...
+    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+
+% Plot ode solution
+plot(sol.ode_sim_5(1,1), sol.ode_sim_5(1,2), ...
+    '.', 'color', '#378c47', 'markersize', 8);
+plot(sol.ode_sim_5(:,1), sol.ode_sim_5(:,2), ...
+    '-', 'color', '#378c47', 'linewidth', 1);
+
+% Format axes
+xlim([0 1]);
+xticks(0:0.5:1);
+xticklabels({'0','0.5','1.0'});
+
+ylim([0 1]);
+yticks(0:0.5:1);
+yticklabels({'0','0.5','1.0'});
+
+set(gca,'fontsize', 12, 'fontname', 'times');
 
 % Save figure
 print(gcf, '../Figures/Figure_3.png', '-dpng', '-r300');
