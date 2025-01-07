@@ -257,7 +257,8 @@ figure(3);
 clf; hold on;
 
 % Define a custom colour palette
-p.c_palette = customColourPalette(["f77e1b"; "2c70b3"; "c74440"]);
+% p.c_palette = customColourPalette(["f77e1b"; "2c70b3"; "c74440"]);
+p.c_palette = customColourPalette(["000000"; "f77e1b"]);
 
 % Define omega range
 omega.min = min(cellfun(@min, bifn.omegas));
