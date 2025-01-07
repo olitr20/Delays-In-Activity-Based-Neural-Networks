@@ -105,6 +105,9 @@ p.alpha = 1; p.beta = 1;
 p.a = 10; p.b = -10;
 p.c = 10; p.d = 2;
 
+% Define simulation parameters
+p.tspan = [0 60]; p.history = [0.7; 0.1];
+
 % Initialise figure 2
 figure(2); clf;
 tiledlayout(2,2,'tilespacing','compact','padding','loose');
@@ -127,6 +130,8 @@ plot(nullclines.u_range, nullclines.v_null, ...
     '-', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot simulation
+plot(sol.ode_sim_1(1,1), sol.ode_sim_1(1,2), ...
+    '.', 'color', '#378c47', 'markersize', 8);
 plot(sol.ode_sim_1(:,1), sol.ode_sim_1(:,2), ...
     '-', 'color', '#378c47', 'linewidth', 1);
 plot(sol.ode_sim_1(end,1), sol.ode_sim_1(end,2), ...
@@ -158,6 +163,8 @@ plot(nullclines.u_range, nullclines.v_null, ...
     '-', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot simulation
+plot(sol.ode_sim_2(1,1), sol.ode_sim_2(1,2), ...
+    '.', 'color', '#378c47', 'markersize', 8);
 plot(sol.ode_sim_2(:,1), sol.ode_sim_2(:,2), ...
     '-', 'color', '#378c47', 'linewidth', 1);
 plot(sol.ode_sim_2(end,1), sol.ode_sim_2(end,2), ...
@@ -187,6 +194,8 @@ plot(nullclines.u_range, nullclines.v_null, ...
     '-', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot simulation
+plot(sol.ode_sim_3(1,1), sol.ode_sim_3(1,2), ...
+    '.', 'color', '#378c47', 'markersize', 8);
 plot(sol.ode_sim_3(:,1), sol.ode_sim_3(:,2), ...
     '-', 'color', '#378c47', 'linewidth', 1);
 plot(sol.ode_sim_3(end,1), sol.ode_sim_3(end,2), ...
@@ -219,6 +228,8 @@ plot(nullclines.u_range, nullclines.v_null, ...
     '-', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot simulation
+plot(sol.ode_sim_4(1,1), sol.ode_sim_4(1,2), ...
+    '.', 'color', '#378c47', 'markersize', 8);
 plot(sol.ode_sim_4(:,1), sol.ode_sim_4(:,2), ...
     '-', 'color', '#378c47', 'linewidth', 1);
 
@@ -347,7 +358,7 @@ p.c = 10; p.d = 2;
 p.theta_u = -2; p.theta_v = -4;
 
 % Define DDE parameters
-p.tspan = [0 50];
+p.tspan = [0 60];
 p.history = [0.6 0.7];
 p.options = ddeset('reltol', 1e-5);
 
@@ -382,7 +393,7 @@ plot(nullclines.u_range, nullclines.v_null, ...
 
 % Plot solution
 plot(sol.dde_sim_1.y(1,1), sol.dde_sim_1.y(2,1), ...
-    '.', 'color', '#378c47', 'markersize', 12);
+    '.', 'color', '#378c47', 'markersize', 8);
 plot(sol.dde_sim_1.y(1,:), sol.dde_sim_1.y(2,:), ...
     'color', '#378c47', 'linewidth', 1);
 
@@ -415,7 +426,7 @@ plot(nullclines.u_range, nullclines.v_null, ...
 
 % Plot solution
 plot(sol.dde_sim_2.y(1,1), sol.dde_sim_2.y(2,1), ...
-    '.', 'color', '#378c47', 'markersize', 12);
+    '.', 'color', '#378c47', 'markersize', 8);
 plot(sol.dde_sim_2.y(1,:), sol.dde_sim_2.y(2,:), ...
     'color', '#378c47', 'linewidth', 1);
 
@@ -445,7 +456,7 @@ plot(nullclines.u_range, nullclines.v_null, ...
 
 % Plot solution
 plot(sol.dde_sim_3.y(1,1), sol.dde_sim_3.y(2,1), ...
-    '.', 'color', '#378c47', 'markersize', 12);
+    '.', 'color', '#378c47', 'markersize', 8);
 plot(sol.dde_sim_3.y(1,:), sol.dde_sim_3.y(2,:), ...
     'color', '#378c47', 'linewidth', 1);
 
@@ -479,7 +490,7 @@ plot(nullclines.u_range, nullclines.v_null, ...
 
 % Plot solution
 plot(sol.dde_sim_4.y(1,1), sol.dde_sim_4.y(2,1), ...
-    '.', 'color', '#378c47', 'markersize', 12);
+    '.', 'color', '#378c47', 'markersize', 8);
 plot(sol.dde_sim_4.y(1,:), sol.dde_sim_4.y(2,:), ...
     'color', '#378c47', 'linewidth', 1);
 

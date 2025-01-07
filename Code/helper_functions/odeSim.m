@@ -2,7 +2,7 @@ function [stst_u, stst_v, sol, nullclines] = odeSim(p)
 % ODESIM  Simulate a system of ordinary differential equations.
 %   Input:
 %       p:  structure containing model parameters of the form {\alpha,
-%           \beta, a, b, c, d, \theta_{u}, \theta_{v}}.
+%           \beta, a, b, c, d, \theta_{u}, \theta_{v}, tspan, history}.
 %   Output:
 %       stst_u: u value of the steady state, if present, found by analysing
 %           the final portion of xode for minimal movement.
@@ -12,13 +12,9 @@ function [stst_u, stst_v, sol, nullclines] = odeSim(p)
 %           specified period of time.
 %       nullclines: structure containing calculated u- and v-nullclines
 %           along with corresponding ranges for u and v.
-
-    % Define simulation parameters
-    x0 = [0.6; 0]; % initial steady state guess
-    tspan = [0 60]; % simulation time span
     
     % Simulate system
-    [~,sol] = ode23s(@(t, x) odefun(t, x, p), tspan, x0);
+    [~,sol] = ode23s(@(t, x) odefun(t, x, p), p.tspan, p.history);
 
     % Extract steady states
     if round(sol(end,:),4) == round(sol(end-1,:),4)
