@@ -108,7 +108,7 @@ function bifn = ddeBifn(p)
     bifn.line_2a(:, any(isnan(bifn.line_2a), 1)) = [];
 
 %% --------------------------------------------------------------------- %%
-% ------------------------------- bias(v) ------------------------------- %
+% ------------------------------ epsilon(x) ----------------------------- %
     % Define the bias functions for theta_u and theta_v
     function e = epsilon(x)
         e = [
