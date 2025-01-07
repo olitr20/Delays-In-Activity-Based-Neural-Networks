@@ -119,10 +119,6 @@ nexttile; hold on;
 p.theta_u = -4.1; p.theta_v = -7;
 [~, ~, sol.ode_sim_1, nullclines] = odeSim(p);
 
-% Plot label
-plot(-0.04, 0.73, '*', 'color', '#c74440', 'markersize', 12);
-plot(-0.04, 0.73, 'square', 'color', '#c74440', 'markersize', 20);
-
 % Plot nullclines
 plot(nullclines.u_null, nullclines.v_range, ...
     '-.', 'color', '#c74440', 'linewidth', 1.5);
@@ -136,6 +132,12 @@ plot(sol.ode_sim_1(:,1), sol.ode_sim_1(:,2), ...
     '-', 'color', '#378c47', 'linewidth', 1);
 plot(sol.ode_sim_1(end,1), sol.ode_sim_1(end,2), ...
     '.', 'color', 'k', 'markersize', 12);
+
+% Plot label
+annotation('textbox',[0.132,0.895,0.06,0.06],'string',"(a)", ...
+    'fontsize',14,'fontname','times','edgecolor','none');
+plot(0.75, 0.73, '*', 'color', '#c74440', 'markersize', 12);
+plot(0.75, 0.73, 'square', 'color', '#c74440', 'markersize', 20);
 
 % Format axes
 ylabel("$\mathit{v}$", 'rotation', 0, 'interpreter', 'latex');
@@ -152,10 +154,6 @@ nexttile; hold on;
 p.theta_u = -3.7; p.theta_v = -7;
 [~, ~, sol.ode_sim_2, nullclines] = odeSim(p);
 
-% Plot label
-plot(-0.04, 0.73, '*', 'color', '#2c70b3', 'markersize', 12);
-plot(-0.04, 0.73, 'square', 'color', '#2c70b3', 'markersize', 20);
-
 % Plot nullclines
 plot(nullclines.u_null, nullclines.v_range, ...
     '-.', 'color', '#c74440', 'linewidth', 1.5);
@@ -170,6 +168,12 @@ plot(sol.ode_sim_2(:,1), sol.ode_sim_2(:,2), ...
 plot(sol.ode_sim_2(end,1), sol.ode_sim_2(end,2), ...
     '.', 'color', 'k', 'markersize', 12);
 
+% Plot label
+annotation('textbox',[0.553,0.895,0.06,0.06],'string',"(b)", ...
+    'fontsize',14,'fontname','times','edgecolor','none');
+plot(0.75, 0.73, '*', 'color', '#2c70b3', 'markersize', 12);
+plot(0.75, 0.73, 'square', 'color', '#2c70b3', 'markersize', 20);
+
 % Format axes
 xlim([-0.1 0.8]);
 ylim([-0.1 0.8]);
@@ -182,10 +186,6 @@ nexttile; hold on;
 % Calculate nullclines and simulate
 p.theta_u = -3.3; p.theta_v = -7;
 [~, ~, sol.ode_sim_3, nullclines] = odeSim(p);
-
-% Plot label
-plot(-0.04, 0.73, '*', 'color', '#378c47', 'markersize', 12);
-plot(-0.04, 0.73, 'square', 'color', '#378c47', 'markersize', 20);
 
 % Plot nullclines
 plot(nullclines.u_null, nullclines.v_range, ...
@@ -200,6 +200,12 @@ plot(sol.ode_sim_3(:,1), sol.ode_sim_3(:,2), ...
     '-', 'color', '#378c47', 'linewidth', 1);
 plot(sol.ode_sim_3(end,1), sol.ode_sim_3(end,2), ...
     '.', 'color', 'k', 'markersize', 12);
+
+% Plot label
+annotation('textbox',[0.132,0.450,0.06,0.06],'string',"(c)", ...
+    'fontsize',14,'fontname','times','edgecolor','none');
+plot(0.75, 0.73, '*', 'color', '#378c47', 'markersize', 12);
+plot(0.75, 0.73, 'square', 'color', '#378c47', 'markersize', 20);
 
 % Format axes
 xlabel("$\mathit{u}$", 'interpreter', 'latex');
@@ -217,10 +223,6 @@ nexttile; hold on;
 p.theta_u = -2.9; p.theta_v = -7;
 [~, ~, sol.ode_sim_4, nullclines] = odeSim(p);
 
-% Plot label
-plot(-0.04, 0.73, '*', 'color', '#f77e1b', 'markersize', 12);
-plot(-0.04, 0.73, 'square', 'color', '#f77e1b', 'markersize', 20);
-
 % Plot nullclines
 plot(nullclines.u_null, nullclines.v_range, ...
     '-.', 'color', '#c74440', 'linewidth', 1.5);
@@ -232,6 +234,12 @@ plot(sol.ode_sim_4(1,1), sol.ode_sim_4(1,2), ...
     '.', 'color', '#378c47', 'markersize', 8);
 plot(sol.ode_sim_4(:,1), sol.ode_sim_4(:,2), ...
     '-', 'color', '#378c47', 'linewidth', 1);
+
+% Plot label
+annotation('textbox',[0.553,0.450,0.06,0.06],'string',"(d)", ...
+    'fontsize',14,'fontname','times','edgecolor','none');
+plot(0.75, 0.73, '*', 'color', '#f77e1b', 'markersize', 12);
+plot(0.75, 0.73, 'square', 'color', '#f77e1b', 'markersize', 20);
 
 % Format axes
 xlabel("$\mathit{u}$", 'interpreter', 'latex');
@@ -388,6 +396,10 @@ tiledlayout(2, 2, 'tilespacing', 'compact', 'padding', 'loose');
 % First subplot
 nexttile; hold on;
 
+% Plot label
+annotation('textbox',[0.132,0.895,0.06,0.06],'string',"(a)", ...
+    'fontsize',14,'fontname','times','edgecolor','none');
+
 % Plot nullclines
 plot(nullclines.u_null, nullclines.v_range, ...
     '-.', 'color', '#c74440', 'linewidth', 1.5);
@@ -432,6 +444,8 @@ plot(sol.dde_sim_1.y(1,:), sol.dde_sim_1.y(2,:), ...
     '-', 'color', '#378c47', 'linewidth', 1);
 
 % Plot label
+annotation('textbox',[0.553,0.895,0.06,0.06],'string',"(b)", ...
+    'fontsize',14,'fontname','times','edgecolor','none');
 plot(0.95, 0.94, '*', 'color', '#c74440', 'markersize', 12);
 plot(0.95, 0.94, 'square', 'color', '#c74440', 'markersize', 20);
 
@@ -464,6 +478,8 @@ plot(sol.dde_sim_2.y(1,end), sol.dde_sim_2.y(2,end), ...
     '.', 'color', '#000000', 'markersize', 12);
 
 % Plot label
+annotation('textbox',[0.132,0.450,0.06,0.06],'string',"(c)", ...
+    'fontsize',14,'fontname','times','edgecolor','none');
 plot(0.95, 0.94, '*', 'color', '#2c70b3', 'markersize', 12);
 plot(0.95, 0.94, 'square', 'color', '#2c70b3', 'markersize', 20);
 
@@ -498,6 +514,8 @@ plot(sol.dde_sim_3.y(1,:), sol.dde_sim_3.y(2,:), ...
     '-', 'color', '#378c47', 'linewidth', 1);
 
 % Plot label
+annotation('textbox',[0.553,0.450,0.06,0.06],'string',"(d)", ...
+    'fontsize',14,'fontname','times','edgecolor','none');
 plot(0.95, 0.94, '*', 'color', '#378c47', 'markersize', 12);
 plot(0.95, 0.94, 'square', 'color', '#378c47', 'markersize', 20);
 
