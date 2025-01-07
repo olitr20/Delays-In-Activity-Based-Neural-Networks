@@ -271,7 +271,7 @@ clf; hold on;
 p.c_palette = customColourPalette(["000000"; "f77e1b"]);
 
 % Define omega range
-omega.min = min(cellfun(@min, bifn.omegas));
+omega.min = 0;
 omega.max = max(cellfun(@max, bifn.omegas));
 
 % Plot first bifurcation line
@@ -333,8 +333,11 @@ set(gca,'fontsize', 14, 'fontname', 'times');
 
 % Add a colour bar for reference
 colormap(p.c_palette);
-clim([omega.min omega.max]);
+clim([0 2]);
 colorbar;
+set(colorbar, ...
+    'Ticks', 0:0.5:2, ...
+    'TickLabels', {'0.0', '0.5', '1.0', '1.5', '2.0'});
 clear omega
 
 % Add annotations
