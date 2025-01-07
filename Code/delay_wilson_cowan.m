@@ -125,9 +125,9 @@ plot(-0.04, 0.73, 'square', 'color', '#c74440', 'markersize', 20);
 
 % Plot nullclines
 plot(nullclines.u_null, nullclines.v_range, ...
-    '-', 'color', '#c74440', 'linewidth', 1.5);
+    '-.', 'color', '#c74440', 'linewidth', 1.5);
 plot(nullclines.u_range, nullclines.v_null, ...
-    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+    '-.', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot simulation
 plot(sol.ode_sim_1(1,1), sol.ode_sim_1(1,2), ...
@@ -158,9 +158,9 @@ plot(-0.04, 0.73, 'square', 'color', '#2c70b3', 'markersize', 20);
 
 % Plot nullclines
 plot(nullclines.u_null, nullclines.v_range, ...
-    '-', 'color', '#c74440', 'linewidth', 1.5);
+    '-.', 'color', '#c74440', 'linewidth', 1.5);
 plot(nullclines.u_range, nullclines.v_null, ...
-    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+    '-.', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot simulation
 plot(sol.ode_sim_2(1,1), sol.ode_sim_2(1,2), ...
@@ -189,9 +189,9 @@ plot(-0.04, 0.73, 'square', 'color', '#378c47', 'markersize', 20);
 
 % Plot nullclines
 plot(nullclines.u_null, nullclines.v_range, ...
-    '-', 'color', '#c74440', 'linewidth', 1.5);
+    '-.', 'color', '#c74440', 'linewidth', 1.5);
 plot(nullclines.u_range, nullclines.v_null, ...
-    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+    '-.', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot simulation
 plot(sol.ode_sim_3(1,1), sol.ode_sim_3(1,2), ...
@@ -223,9 +223,9 @@ plot(-0.04, 0.73, 'square', 'color', '#f77e1b', 'markersize', 20);
 
 % Plot nullclines
 plot(nullclines.u_null, nullclines.v_range, ...
-    '-', 'color', '#c74440', 'linewidth', 1.5);
+    '-.', 'color', '#c74440', 'linewidth', 1.5);
 plot(nullclines.u_range, nullclines.v_null, ...
-    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+    '-.', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot simulation
 plot(sol.ode_sim_4(1,1), sol.ode_sim_4(1,2), ...
@@ -308,11 +308,14 @@ for i = 1:length(bifn.line_2)-1
 end
 clear i x_seg y_seg
 
+% Plot label
+plot(0.4, 1.44, '*', 'color', 'k', 'markersize', 12);
+plot(0.4, 1.44, 'square', 'color', 'k', 'markersize', 20);
+
 % Plot simulation points
 plot(0.5, 1, '*', 'color', '#c74440', 'markersize', 5);
 plot(3, 1, '*', 'color', '#2c70b3', 'markersize', 5);
 plot(6, 1, '*', 'color', '#378c47', 'markersize', 5);
-plot(10, 1, '*', 'color', '#f77e1b', 'markersize', 5);
 
 % Format axes
 xlabel("\tau_1");
@@ -335,47 +338,12 @@ colorbar;
 clear omega
 
 % Add annotations
-annotation('textbox',[0.20 0.71 0.1219 0.0619],'string',"unstable", ...
+annotation('textbox',[0.1696 0.4562 0.1219 0.0619],'string',"unstable", ...
     'rotation',71.5,'fontsize',14,'fontname','times','edgecolor','none');
-annotation('textbox',[0.31 0.72 0.0969 0.0619],'string',"stable", ...
+annotation('textbox',[0.2428 0.4062 0.0969 0.0619],'string',"stable", ...
     'rotation',71.5,'fontsize',14,'fontname','times','edgecolor','none');
-annotation('textbox',[0.50 0.75 0.1219 0.0619],'string',"unstable", ...
+annotation('textbox',[0.4781 0.3905 0.1219 0.0619],'string',"unstable", ...
     'fontsize',14,'fontname','times','edgecolor','none');
-
-% Add inset with ode simulation
-axes('Position',[0.49 0.27 0.3 0.3]);
-box on; hold on;
-
-% Calculate nullclines and simulate ode system
-p.tspan = [0 60]; p.history = [0.6 0.7];
-[~, ~, sol.ode_sim_5, nullclines] = odeSim(p);
-
-% Plot label
-plot(0.065, 0.91, '*', 'color', 'k', 'markersize', 12);
-plot(0.065, 0.91, 'square', 'color', 'k', 'markersize', 20);
-
-% Plot nullclines
-plot(nullclines.u_null, nullclines.v_range, ...
-    '-', 'color', '#c74440', 'linewidth', 1.5);
-plot(nullclines.u_range, nullclines.v_null, ...
-    '-', 'color', '#2c70b3', 'linewidth', 1.5);
-
-% Plot ode solution
-plot(sol.ode_sim_5(1,1), sol.ode_sim_5(1,2), ...
-    '.', 'color', '#378c47', 'markersize', 8);
-plot(sol.ode_sim_5(:,1), sol.ode_sim_5(:,2), ...
-    '-', 'color', '#378c47', 'linewidth', 1);
-
-% Format axes
-xlim([0 1]);
-xticks(0:0.5:1);
-xticklabels({'0','0.5','1.0'});
-
-ylim([0 1]);
-yticks(0:0.5:1);
-yticklabels({'0','0.5','1.0'});
-
-set(gca,'fontsize', 12, 'fontname', 'times');
 
 % Save figure
 print(gcf, '../Figures/Figure_3.png', '-dpng', '-r300');
@@ -392,9 +360,11 @@ p.tspan = [0 60];
 p.history = [0.6 0.7];
 p.options = ddeset('reltol', 1e-5);
 
+[~, ~, sol.ode_sim_5, nullclines] = odeSim(p);
+
 p.tau1 = 0.5; p.tau2 = 1;
 p.delays = [p.tau1 p.tau2];
-[sol.dde_sim_1, nullclines] = ddeSim(p);
+[sol.dde_sim_1] = ddeSim(p);
 
 p.tau1 = 3; p.tau2 = 1;
 p.delays = [p.tau1 p.tau2];
@@ -417,19 +387,17 @@ nexttile; hold on;
 
 % Plot nullclines
 plot(nullclines.u_null, nullclines.v_range, ...
-    '-', 'color', '#c74440', 'linewidth', 1.5);
+    '-.', 'color', '#c74440', 'linewidth', 1.5);
 plot(nullclines.u_range, nullclines.v_null, ...
-    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+    '-.', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot solution
-plot(sol.dde_sim_1.y(1,1), sol.dde_sim_1.y(2,1), ...
+plot(sol.ode_sim_5(1,1), sol.ode_sim_5(1,2), ...
     '.', 'color', '#378c47', 'markersize', 8);
-plot(sol.dde_sim_1.y(1,:), sol.dde_sim_1.y(2,:), ...
-    'color', '#378c47', 'linewidth', 1);
-
-% Plot label
-plot(0.95, 0.94, '*', 'color', '#c74440', 'markersize', 12);
-plot(0.95, 0.94, 'square', 'color', '#c74440', 'markersize', 20);
+plot(sol.ode_sim_5(:,1), sol.ode_sim_5(:,2), ...
+    '-', 'color', '#378c47', 'linewidth', 1);
+plot(sol.ode_sim_5(end,1), sol.ode_sim_5(end,2), ...
+    '.', 'color', 'k', 'markersize', 12);
 
 % Format axes
 ylabel("$\mathit{v}$", 'interpreter', 'latex', 'rotation', 0, ...
@@ -450,19 +418,19 @@ nexttile; hold on;
 
 % Plot nullclines
 plot(nullclines.u_null, nullclines.v_range, ...
-    '-', 'color', '#c74440', 'linewidth', 1.5);
+    '-.', 'color', '#c74440', 'linewidth', 1.5);
 plot(nullclines.u_range, nullclines.v_null, ...
-    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+    '-.', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot solution
-plot(sol.dde_sim_2.y(1,1), sol.dde_sim_2.y(2,1), ...
+plot(sol.dde_sim_1.y(1,1), sol.dde_sim_1.y(2,1), ...
     '.', 'color', '#378c47', 'markersize', 8);
-plot(sol.dde_sim_2.y(1,:), sol.dde_sim_2.y(2,:), ...
-    'color', '#378c47', 'linewidth', 1);
+plot(sol.dde_sim_1.y(1,:), sol.dde_sim_1.y(2,:), ...
+    '-', 'color', '#378c47', 'linewidth', 1);
 
 % Plot label
-plot(0.95, 0.94, '*', 'color', '#2c70b3', 'markersize', 12);
-plot(0.95, 0.94, 'square', 'color', '#2c70b3', 'markersize', 20);
+plot(0.95, 0.94, '*', 'color', '#c74440', 'markersize', 12);
+plot(0.95, 0.94, 'square', 'color', '#c74440', 'markersize', 20);
 
 % Format axes
 xlim([0 1]);
@@ -480,19 +448,21 @@ nexttile; hold on;
 
 % Plot nullclines
 plot(nullclines.u_null, nullclines.v_range, ...
-    '-', 'color', '#c74440', 'linewidth', 1.5);
+    '-.', 'color', '#c74440', 'linewidth', 1.5);
 plot(nullclines.u_range, nullclines.v_null, ...
-    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+    '-.', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot solution
-plot(sol.dde_sim_3.y(1,1), sol.dde_sim_3.y(2,1), ...
+plot(sol.dde_sim_2.y(1,1), sol.dde_sim_2.y(2,1), ...
     '.', 'color', '#378c47', 'markersize', 8);
-plot(sol.dde_sim_3.y(1,:), sol.dde_sim_3.y(2,:), ...
-    'color', '#378c47', 'linewidth', 1);
+plot(sol.dde_sim_2.y(1,:), sol.dde_sim_2.y(2,:), ...
+    '-', 'color', '#378c47', 'linewidth', 1);
+plot(sol.dde_sim_2.y(1,end), sol.dde_sim_2.y(2,end), ...
+    '.', 'color', '#000000', 'markersize', 12);
 
 % Plot label
-plot(0.95, 0.94, '*', 'color', '#378c47', 'markersize', 12);
-plot(0.95, 0.94, 'square', 'color', '#378c47', 'markersize', 20);
+plot(0.95, 0.94, '*', 'color', '#2c70b3', 'markersize', 12);
+plot(0.95, 0.94, 'square', 'color', '#2c70b3', 'markersize', 20);
 
 % Format axes
 xlabel("$\mathit{u}$", 'interpreter', 'latex');
@@ -514,19 +484,19 @@ nexttile; hold on;
 
 % Plot nullclines
 plot(nullclines.u_null, nullclines.v_range, ...
-    '-', 'color', '#c74440', 'linewidth', 1.5);
+    '-.', 'color', '#c74440', 'linewidth', 1.5);
 plot(nullclines.u_range, nullclines.v_null, ...
-    '-', 'color', '#2c70b3', 'linewidth', 1.5);
+    '-.', 'color', '#2c70b3', 'linewidth', 1.5);
 
 % Plot solution
-plot(sol.dde_sim_4.y(1,1), sol.dde_sim_4.y(2,1), ...
+plot(sol.dde_sim_3.y(1,1), sol.dde_sim_3.y(2,1), ...
     '.', 'color', '#378c47', 'markersize', 8);
-plot(sol.dde_sim_4.y(1,:), sol.dde_sim_4.y(2,:), ...
-    'color', '#378c47', 'linewidth', 1);
+plot(sol.dde_sim_3.y(1,:), sol.dde_sim_3.y(2,:), ...
+    '-', 'color', '#378c47', 'linewidth', 1);
 
 % Plot label
-plot(0.95, 0.94, '*', 'color', '#f77e1b', 'markersize', 12);
-plot(0.95, 0.94, 'square', 'color', '#f77e1b', 'markersize', 20);
+plot(0.95, 0.94, '*', 'color', '#378c47', 'markersize', 12);
+plot(0.95, 0.94, 'square', 'color', '#378c47', 'markersize', 20);
 
 % Format axes
 xlabel("$\mathit{u}$", 'interpreter', 'latex');
