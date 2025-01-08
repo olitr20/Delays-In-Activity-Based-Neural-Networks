@@ -98,7 +98,8 @@ plot(0.75, 0.73, '*', 'color', '#c74440', 'markersize', 12);
 plot(0.75, 0.73, 'square', 'color', '#c74440', 'markersize', 20);
 
 % Format axes
-ylabel("$\mathit{v}$", 'rotation', 0, 'interpreter', 'latex');
+ylabel("$\mathit{v}$", 'interpreter', 'latex', 'rotation', 0, ...
+    'position', [-0.28, 0.35, -1], 'verticalalignment', 'middle');
 
 xlim([-0.1 0.8]);
 ylim([-0.1 0.8]);
@@ -167,7 +168,8 @@ plot(0.75, 0.73, 'square', 'color', '#378c47', 'markersize', 20);
 
 % Format axes
 xlabel("$\mathit{u}$", 'interpreter', 'latex');
-ylabel("$\mathit{v}$", 'rotation', 0, 'interpreter', 'latex');
+ylabel("$\mathit{v}$", 'interpreter', 'latex', 'rotation', 0, ...
+    'position', [-0.28, 0.35, -1], 'verticalalignment', 'middle');
 
 xlim([-0.1 0.8]);
 ylim([-0.1 0.8]);
@@ -576,7 +578,7 @@ end
 
 % Format axes
 ylabel("$\mathit{u}$", 'rotation', 0, 'interpreter', 'latex', ...
-    'position', [0.35, 0.5, -1], 'verticalalignment', 'middle');
+    'position', [0.345, 0.5, -1], 'verticalalignment', 'middle');
 
 xlim([0.4 1]);
 xticks([0.4 0.5 0.6 0.7 0.8 0.9 1]);
@@ -607,7 +609,7 @@ end
 
 % Format axes
 ylabel("$\mathit{u}$", 'rotation', 0, 'interpreter', 'latex', ...
-    'position', [0.465, 0.45, -1], 'verticalalignment', 'middle');
+    'position', [0.464, 0.45, -1], 'verticalalignment', 'middle');
 
 xlim([0.5 0.9]);
 xticks([0.5 0.6 0.7 0.8 0.9]);
@@ -639,7 +641,7 @@ end
 % Format axes
 xlabel("$\theta_{\mathit{u}}$", 'interpreter', 'latex');
 ylabel("$\mathit{u}$", 'rotation', 0, 'interpreter', 'latex', ...
-    'position', [0.465, 0.5, -1], 'verticalalignment', 'middle');
+    'position', [0.464, 0.5, -1], 'verticalalignment', 'middle');
 
 xlim([0.5 0.9]);
 xticks([0.5 0.6 0.7 0.8 0.9]);
@@ -689,7 +691,7 @@ clear lambda_max
 %% Figure 8 Replictae
 % Extract and filter lambda_max
 le.img = le.lambda_max;
-le.img(le.img < 0) = 0;
+le.img(le.img < -3.5) = -3.5;
 
 % Initialise figure 7
 figure(7);
@@ -703,28 +705,24 @@ colorbar;
 % Plot label
 plot(-3.7, 1.9, '*', 'color', '#f77e1b', 'markersize', 8);
 
-% Calculate plotting boundaries
-astep = (p.arange(2) - p.arange(1)) / 2;
-bstep = (p.brange(2) - p.brange(1)) / 2;
-
 % Format axes
 xlabel("$\mathit{a}$", 'interpreter', 'latex');
-ylabel("$\mathit{b}$", 'interpreter', 'latex','rotation', 0);
+ylabel("$\mathit{b}$", 'interpreter', 'latex', 'rotation', 0, ...
+    'position', [-10.8, 2.5, -1], 'verticalalignment', 'middle');
 
-xlim([-10 - astep, 0 + astep]);
-xticks([-10 -8 -6 -4 -2 0]);
+xlim([-10, 0]);
+xticks(-10:2:0);
 xticklabels({'-10', '-8', '-6', '-4', '-2', '0'});
 
-ylim([0 - bstep, 5 + bstep]);
-yticks([0 1 2 3 4 5]);
+ylim([0, 5]);
+yticks(0:1:5);
 yticklabels({'0', '1', '2', '3', '4', '5'});
+
 
 set(gca,'fontsize', 14, 'fontname', 'times');
 
 % Save figure
 print(gcf, '../Figures/Figure_8.png', '-dpng', '-r300');
-
-clear astep bstep
 
 %% Figure 9 Replicate
 % Select Parameters
@@ -779,16 +777,17 @@ annotation('textbox',[0.132,0.895,0.06,0.06],'string',"(a)", ...
     'fontsize',14,'fontname','times','edgecolor','none');
 
 % Format axes
-ylabel("$\mathit{v}$", 'interpreter', 'latex','rotation', 0);
+ylabel("$\mathit{v}$", 'interpreter', 'latex', 'rotation', 0, ...
+    'position', [0.085, 0.175, -1], 'verticalalignment', 'middle');
 
 xlim([0.115, 0.235]);
-xticks(0.12:0.01:0.23);
-xticklabels({'0.12', '', '0.14', '', '0.16', '', '0.18', '', '0.20', '', '0.22', ''});
+xticks(0.12:0.02:0.23);
+xticklabels({'', '0.14', '', '0.18', '', '0.22'});
 xtickangle(0);
 
 ylim([0.115, 0.235]);
-yticks(0.12:0.01:0.23);
-yticklabels({'0.12', '', '0.14', '', '0.16', '', '0.18', '', '0.20', '', '0.22', ''});
+yticks(0.115:0.02:0.235);
+yticklabels({'0.115', '', '0.155', '', '0.195', '', '0.235'});
 
 
 set(gca,'fontsize', 14, 'fontname', 'times');
@@ -806,13 +805,13 @@ annotation('textbox',[0.553,0.895,0.06,0.06],'string',"(b)", ...
 
 % Format axes
 xlim([0.115, 0.235]);
-xticks(0.12:0.01:0.23);
-xticklabels({'0.12', '', '0.14', '', '0.16', '', '0.18', '', '0.20', '', '0.22', ''});
+xticks(0.12:0.02:0.23);
+xticklabels({'', '0.14', '', '0.18', '', '0.22'});
 xtickangle(0);
 
 ylim([0.115, 0.235]);
-yticks(0.12:0.01:0.23);
-yticklabels({'0.12', '', '0.14', '', '0.16', '', '0.18', '', '0.20', '', '0.22', ''});
+yticks(0.115:0.02:0.235);
+yticklabels({'0.115', '', '0.155', '', '0.195', '', '0.235'});
 
 set(gca,'fontsize', 14, 'fontname', 'times');
 
@@ -829,7 +828,8 @@ annotation('textbox',[0.132,0.450,0.06,0.06],'string',"(c)", ...
 
 % Format axes
 xlabel("$\mathit{u}$", 'interpreter', 'latex');
-ylabel("$\mathit{v}$", 'interpreter', 'latex','rotation', 0);
+ylabel("$\mathit{v}$", 'interpreter', 'latex', 'rotation', 0, ...
+    'position', [0.104, 0.1675, -1], 'verticalalignment', 'middle');
 
 xlim([0.125, 0.21]);
 xticks(0.13:0.01:0.21);
@@ -838,7 +838,7 @@ xtickangle(0);
 
 ylim([0.125, 0.21]);
 yticks(0.13:0.01:0.21);
-yticklabels({'', '0.14', '', '0.16', '', '0.18', '', '0.20', ''});
+yticklabels({'0.13', '', '0.15', '', '0.17', '', '0.19', '', '0.21'});
 
 set(gca,'fontsize', 14, 'fontname', 'times');
 
@@ -863,7 +863,7 @@ xtickangle(0);
 
 ylim([0.125, 0.21]);
 yticks(0.13:0.01:0.21);
-yticklabels({'', '0.14', '', '0.16', '', '0.18', '', '0.20', ''});
+yticklabels({'0.13', '', '0.15', '', '0.17', '', '0.19', '', '0.21'});
 
 set(gca,'fontsize', 14, 'fontname', 'times');
 
