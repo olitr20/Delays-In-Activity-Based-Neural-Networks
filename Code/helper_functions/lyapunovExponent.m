@@ -1,9 +1,7 @@
-function lambda_max = lyapunovExponent(ddefun, p, ptbn, int)
+function lambda_max = lyapunovExponent(p, ptbn, int)
 % LYAPUNOVEXPONENT calculate the maximal Lyapunov Exponent of a dynamical
 % system for a given set of parameters.
 %   Inputs:
-%       ddefun: function handle defining the system of delayed differential
-%           equations.
 %       p:  structure containing model parameters of the form {\alpha,
 %           \beta, a, b, c, d, \theta_{u}, \theta_{v}, \tau_{1}, \tau_{2},
 %           delays, history, timespan, options}.
@@ -21,7 +19,8 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn, int)
     options = p.options;
 
     % Integrate initial condition over time span
-    sol = dde23(ddefun, delays, history, tspan, options);
+    sol = dde23(@(t,y,Z) ddefun(t,y,Z,p), ...
+        delays, history, tspan, options);
 
     % Extract time points from this solution
     timepoints = tspan(1):int:tspan(2);
@@ -52,8 +51,8 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn, int)
         perturbation = ptbn_r * norm_vec;
 
         % Integrate perturbed solution over interval
-        perturbed_sol = dde23(ddefun, delays, @perturbed_history, ...
-            [t_current t_next], options);
+        perturbed_sol = dde23(@(t,y,Z) ddefun(t,y,Z,p), ...
+            delays, @perturbed_history, [t_current t_next], options);
 
         % Extract perturbed state at t_next
         x_next_perturbed = deval(perturbed_sol, t_next);
@@ -70,6 +69,25 @@ function lambda_max = lyapunovExponent(ddefun, p, ptbn, int)
     lambda_max = mean(log_growth_rates);
 
 %% --------------------------------------------------------------------- %%
+%% --------------------------------------------------------------------- %%
+% ------------------------------- f(x,p) -------------------------------- %
+    % Define the inverse sigmoid function, for z = u,v
+    function f = f(z,p)
+        f = 1 ./ (1 + exp(-p.beta * z));
+    end
+
+% ---------------------------- ddefun(t,y,Z) ---------------------------- %
+    function d = ddefun(~,y,Z,p)
+        dudt = -y(1) + ...
+            f(p.theta_u + p.a .* Z(1,1) + ...
+            p.b .* Z(2,2),p);
+        dvdt = p.alpha .* ...
+            (-y(2) + f(p.theta_v + p.c .* Z(1,2) + ...
+            p.d .* Z(2,1),p));
+    
+        d = [dudt; dvdt];
+    end
+
 % ------------------------- perturbed_history(t) ------------------------ %
     % Define the history function
     function h = perturbed_history(t)
