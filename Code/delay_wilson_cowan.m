@@ -2,48 +2,6 @@
 clearvars; clc;
 addpath('helper_functions/');
 
-%% Figure 1 Replicate
-% Define Model Parameters
-p.alpha = 1; p.beta = 1;
-p.a = 10; p.b = -10;
-p.c = 10; p.d = 2;
-
-% Calculate hopf, saddle-node and bogdanov-takens bifurcations
-[hopf, sn] = odeBifn(p);
-
-% Initialise figure 1
-figure(1);
-clf; hold on;
-
-% Plot hopf bifurcation
-plot(hopf.theta.uP, hopf.theta.vP, 'k--', 'linewidth',1); % plus values
-plot(hopf.theta.uM, hopf.theta.vM,'k--', 'linewidth',1); % minus values
-
-% Plot saddle node bifurcation
-plot(sn.theta.uP, sn.theta.vP, 'k', 'linewidth',1.5); % plus values
-plot(sn.theta.uM, sn.theta.vM, 'k', 'linewidth',1.5); % minus values
-
-% Format axes
-xlabel("$\theta_{\mathit{u}}$", 'interpreter', 'latex');
-ylabel("$\theta_{\mathit{v}}$", 'rotation', 0, 'interpreter', 'latex');
-
-xlim([-7 7]);
-xticks(-6:2:6);
-xticklabels({'','-4','','0','','-4',''});
-
-ylim([-12 0]);
-yticks(-12:2:0);
-yticklabels({'-12','','-8','','-4','','0'});
-
-set(gca,'fontsize', 14, 'fontname', 'times');
-
-% Graph text
-text(0, -9.2, "HB", 'fontsize', 14, 'fontname', 'times');
-text(5, -4, "SN", 'fontsize', 14, 'fontname', 'times');
-
-% Save figure
-print(gcf, '../Figures/Figure_1a.png', '-dpng', '-r300');
-
 %% Figure 1 Replicate - With Bogdanov-Takens Bifurcations
 % Define Model Parameters
 p.alpha = 1; p.beta = 1;
@@ -97,7 +55,7 @@ text(0, -9.2, "HB", 'fontsize', 14, 'fontname', 'times');
 text(5, -4, "SN", 'fontsize', 14, 'fontname', 'times');
 
 % Save figure
-print(gcf, '../Figures/Figure_1b.png', '-dpng', '-r300');
+print(gcf, '../Figures/Figure_1.png', '-dpng', '-r300');
 
 %% Simulate ODE System Around Bifurcation Lines
 % Define Model Parameters
@@ -535,90 +493,6 @@ set(gca,'fontsize', 14, 'fontname', 'times');
 % Save figure
 print(gcf, '../Figures/Figure_4.png', '-dpng', '-r300');
 
-%% Figure 3 Replicate
-% Define Model Parameters
-p.alpha = 1; p.beta = 600; % high \beta approximates heaviside
-p.a = -1; p.b = -0.4;
-p.c = -0.4; p.d = -1;
-p.theta_u = 0.7; p.theta_v = 0.7;
-p.tau1 = 1; p.tau2 = 1.4;
-
-% Define DDE parameters
-p.tspan = [0 15];
-p.delays = [p.tau1 p.tau2];
-p.options = ddeset('reltol', 1e-5);
-
-% Solve DDE
-% sol.Synchronous = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
-%     p.delays,p.history1,p.tspan,p.options);
-% sol.AntiSynchronous = dde23(@(t, y, Z) ddefun(t, y, Z, p), ...
-%     p.delays,p.history2,p.tspan,p.options);
-
-p.history = [0.37 0.8];
-sol.Synchronous = ddeSim(p);
-
-p.history = [0.2 0.8];
-sol.AntiSynchronous = ddeSim(p);
-
-% Initilaise figure 5
-figure(5); clf;
-tiledlayout(2,1,'tilespacing','compact','padding','loose');
-
-% First subplot
-nexttile; hold on;
-
-% Plot synchronous solution
-plot(sol.Synchronous.x, sol.Synchronous.y(1,:), ...
-    'k', 'linewidth', 1.5); % u against time
-dashline(sol.Synchronous.x,sol.Synchronous.y(2,:), ...
-    1.5, 1, 1.5, 1, 'color', '#808080', 'linewidth', 1.5); % v against time
-
-% Format axes
-xlim([0, 15]);
-xticks([0 5 10 15]);
-xticklabels({'','','',''});
-
-ylim([0, 1]);
-yticks([0 0.5 1.0]);
-yticklabels({'0', '0.5', '1.0'});
-
-set(gca,'fontsize', 14, 'fontname', 'times');
-
-% Second subplot
-nexttile; hold on;
-
-% Plot antisynchronous solution
-plot(sol.AntiSynchronous.x, sol.AntiSynchronous.y(1,:), ...
-    'k', 'linewidth', 1.5); % u against time
-dashline(sol.AntiSynchronous.x,sol.AntiSynchronous.y(2,:), ...
-    1.5, 1, 1.5, 1, 'color', '#808080', 'linewidth', 1.5); % v against time
-
-% Format axes
-xlabel("$\mathit{t}$", 'interpreter', 'latex');
-
-xlim([0, 15]);
-xticks([0 5 10 15]);
-xticklabels({'0', '5', '10', '15'});
-
-ylim([0, 1]);
-yticks([0 0.5 1.0]);
-yticklabels({'0', '0.5', '1.0'});
-
-set(gca,'fontsize', 14, 'fontname', 'times');
-
-% Add annotations
-annotation('textbox',[0.14 0.81 0.0446 0.0536],'string',"$\mathit{u}$", ...
-    'fontsize',14,'edgecolor','none','interpreter','latex');
-annotation('textbox',[0.15 0.61 0.0446 0.0536],'String',"$\mathit{v}$", ...
-    'fontsize',14,'edgecolor','none','interpreter','latex');
-annotation('textbox',[0.15 0.37 0.0446 0.0536],'string',"$\mathit{u}$", ...
-    'fontsize',14,'edgecolor','none','interpreter','latex');
-annotation('textbox',[0.15 0.18 0.0446 0.0536],'string',"$\mathit{v}$", ...
-    'fontsize',14,'edgecolor','none','interpreter','latex');
-
-% Save figure
-print(gcf, '../Figures/Figure_5.png', '-dpng', '-r300');
-
 %% Figure 6 Replicate
 % Define model parameters
 p.alpha = 1; p.beta = 60;
@@ -780,94 +654,10 @@ set(gca,'fontsize', 14, 'fontname', 'times');
 % Save figure
 print(gcf, '../Figures/Figure_7.png', '-dpng', '-r300');
 
-%% Figure 9a Replicate
-% Select Parameters
-p.alpha = 1; p.beta = 60;
-p.a = -6; p.b = 2.5;
-p.c = 2.5; p.d = -6;
-p.theta_u = 0.2; p.theta_v = 0.2;
-p.tau1 = 0.1; p.tau2 = 0.1;
-
-% Define DDE parameters
-p.tspan = [0 40];
-p.delays = [p.tau1 p.tau2];
-p.history = [0.074 0.077];
-p.options = ddeset('reltol', 1e-5);
-
-% Solve DDE
-sol.Chaotic = ddeSim(p);
-
-% Initialise figure 8
-figure(8);
-clf; hold on;
-
-% Plot chotic solution
-plot(sol.Chaotic.y(1,:), sol.Chaotic.y(2,:), ...
-    'k', 'linewidth', 1.5); % u against v
-
-% Format axes
-xlabel("$\mathit{u}$", 'interpreter', 'latex');
-ylabel("$\mathit{v}$", 'interpreter', 'latex','rotation', 0);
-
-xlim([0.062, 0.178]);
-xticks([0.08 0.1 0.12 0.14 0.16]);
-yticks([0.06 0.08 0.1 0.12 0.14 0.16 0.18]);
-
-ylim([0.06, 0.18]);
-xticklabels({'0.08', '', '0.12', '', '0.16', ''});
-yticklabels({'0.06', '', '0.10', '', '0.14', '', '0.18'});
-
-set(gca,'fontsize', 14, 'fontname', 'times');
-
-% Save figure
-print(gcf, '../Figures/Figure_9a.png', '-dpng', '-r300');
-
-%% Figure 9b Replicate
-% Select Parameters
-p.alpha = 1; p.beta = 40;
-p.a = -6; p.b = 2.5;
-p.c = 2.5; p.d = -6;
-p.theta_u = 0.2; p.theta_v = 0.2;
-p.tau1 = 0.1; p.tau2 = 0.1;
-
-% Define DDE parameters
-p.tspan = [0 40];
-p.delays = [p.tau1 p.tau2];
-p.history = [0.074 0.077];
-p.options = ddeset('reltol', 1e-5);
-
-% Solve DDE
-sol.QuasiPeriodic = ddeSim(p);
-
-% Initialise figure 9
-figure(9);
-clf; hold on;
-
-% Plot chotic solution
-plot(sol.QuasiPeriodic.y(1,:), sol.QuasiPeriodic.y(2,:), ...
-    'k', 'linewidth', 1.5); % u against v
-
-% Format axes
-xlabel("$\mathit{u}$", 'interpreter', 'latex');
-ylabel("$\mathit{v}$", 'interpreter', 'latex','rotation', 0);
-
-xlim([0.07, 0.105]);
-xticks([0.07 0.075 0.08 0.085 0.09 0.095 0.1 0.105]);
-xticklabels({'', '', '0.08', '', '0.09', '', '0.10', ''});
-
-ylim([0.07, 0.105]);
-yticks([0.07 0.075 0.08 0.085 0.09 0.095 0.1 0.105]);
-yticklabels({'', '0.075', '', '0.085', '', '0.095', '', '0.105'});
-
-set(gca,'fontsize', 14, 'fontname', 'times');
-
-% Save figure
-print(gcf, '../Figures/Figure_9b.png', '-dpng', '-r300');
-
 %% Calculate Maximum Lyapunov Exponents over parameter space
 % This section may take up to 3 hours to complete
 
-% Define Lyaounov exponent calculation parameters
+% Define Lyapunov exponent calculation parameters
 p.ptbn = 0.001; % distance to perturb points along main trajectory
 p.int = 5; % interval to simulate perturbations for
 
@@ -889,23 +679,29 @@ p.history = [0.074 0.077];
 p.options = ddeset('reltol', 1e-5);
 
 % Calculate maximum Lyapunov Exponents
-% lambda_max = calcLyapunovExponent(p);
+% le.lambda_max = calcLyapunovExponent(p);
 
 % Alternatively, load pre-calculated lambda_max
 load('lambda_max.mat');
+le.lambda_max = lambda_max;
+clear lambda_max
+
 %% Figure 8 Replictae
 % Extract and filter lambda_max
-le_img = lambda_max;
-le_img(le_img < 0) = 0;
+le.img = le.lambda_max;
+le.img(le.img < 0) = 0;
 
-% Initialise figure 10
-figure(10);
+% Initialise figure 8
+figure(8);
 clf; hold on;
 
 % Plot lambda max
-imagesc(p.a_grid(1, :), p.b_grid(:, 1), le_img);
+imagesc(p.a_grid(1, :), p.b_grid(:, 1), le.img);
 colormap(flipud(gray));
 colorbar;
+
+% Plot label
+plot(-3.7, 1.9, '*', 'color', '#f77e1b', 'markersize', 8);
 
 % Calculate plotting boundaries
 astep = (p.arange(2) - p.arange(1)) / 2;
@@ -929,3 +725,128 @@ set(gca,'fontsize', 14, 'fontname', 'times');
 print(gcf, '../Figures/Figure_8.png', '-dpng', '-r300');
 
 clear astep bstep
+
+%% Figure 9 Replicate
+% Select Parameters
+p.alpha = 1;
+p.a = -3.7; p.b = 1.9;
+p.c = 1.9; p.d = -3.7;
+p.theta_u = 0.2; p.theta_v = 0.2;
+p.tau1 = 0.1; p.tau2 = 0.1;
+
+% Define DDE parameters
+p.tspan = [0 10];
+p.delays = [p.tau1 p.tau2];
+p.options = ddeset('reltol', 1e-5);
+
+% Define Lyapunov exponent calculation parameters
+p.ptbn = 0.001; % distance to perturb points along main trajectory
+p.int = 5; % interval to simulate perturbations for
+
+% Solve DDE - chaotic solutions
+p.beta = 60;
+p.history = [0.1313 0.15];
+sol.Chaotic_1 = ddeSim(p);
+le.Chaotic_1 = lyapunovExponent(p, p.ptbn, p.int);
+
+p.history = [0.1323 0.15];
+sol.Chaotic_2 = ddeSim(p);
+le.Chaotic_2 = lyapunovExponent(p, p.ptbn, p.int);
+
+% Solve DDE - quasi-periodic solutions
+p.beta = 40;
+p.history = [0.1313 0.15];
+sol.QuasiPeriodic_1 = ddeSim(p);
+le.QuasiPeriodic_1 = lyapunovExponent(p, p.ptbn, p.int);
+
+p.history = [0.1323 0.15];
+sol.QuasiPeriodic_2 = ddeSim(p);
+le.QuasiPeriodic_2 = lyapunovExponent(p, p.ptbn, p.int);
+
+% Initialise figure 9
+figure(9); clf;
+tiledlayout(2,2,'tilespacing','compact','padding','loose');
+
+% First subplot
+nexttile; hold on;
+
+% Plot chotic solution
+plot(sol.Chaotic_1.y(1,:), sol.Chaotic_1.y(2,:), ...
+    'k', 'linewidth', 1);
+
+% Format axes
+ylabel("$\mathit{v}$", 'interpreter', 'latex','rotation', 0);
+
+xlim([0.115, 0.235]);
+xticks(0.12:0.02:0.22);
+xticklabels({'0.12', '0.14', '0.16', '0.18', '0.20', '0.22'});
+xtickangle(0);
+
+ylim([0.115, 0.235]);
+yticks(0.12:0.02:0.22);
+yticklabels({'0.12', '0.14', '0.16', '0.18', '0.20', '0.22'});
+
+set(gca,'fontsize', 14, 'fontname', 'times');
+
+% Second subplot
+nexttile; hold on;
+
+% Plot chotic solution
+plot(sol.Chaotic_2.y(1,:), sol.Chaotic_2.y(2,:), ...
+    'k', 'linewidth', 1);
+
+% Format axes
+xlim([0.115, 0.235]);
+xticks(0.12:0.02:0.22);
+xticklabels({'0.12', '0.14', '0.16', '0.18', '0.20', '0.22'});
+xtickangle(0);
+
+ylim([0.115, 0.235]);
+yticks(0.12:0.02:0.22);
+yticklabels({'0.12', '0.14', '0.16', '0.18', '0.20', '0.22'});
+
+set(gca,'fontsize', 14, 'fontname', 'times');
+
+% Third subplot
+nexttile; hold on;
+
+% Plot chotic solution
+plot(sol.QuasiPeriodic_1.y(1,:), sol.QuasiPeriodic_1.y(2,:), ...
+    'k', 'linewidth', 1);
+
+% Format axes
+xlabel("$\mathit{u}$", 'interpreter', 'latex');
+ylabel("$\mathit{v}$", 'interpreter', 'latex','rotation', 0);
+
+xlim([0.125, 0.21]);
+xticks(0.14:0.02:0.2);
+xticklabels({'0.14', '0.16', '0.18', '0.20'});
+
+ylim([0.125, 0.21]);
+yticks(0.14:0.02:0.2);
+yticklabels({'0.14', '0.16', '0.18', '0.20'});
+
+set(gca,'fontsize', 14, 'fontname', 'times');
+
+% Fourth subplot
+nexttile; hold on;
+
+% Plot chotic solution
+plot(sol.QuasiPeriodic_2.y(1,:), sol.QuasiPeriodic_2.y(2,:), ...
+    'k', 'linewidth', 1);
+
+% Format axes
+xlabel("$\mathit{u}$", 'interpreter', 'latex');
+
+xlim([0.125, 0.21]);
+xticks(0.14:0.02:0.2);
+xticklabels({'0.14', '0.16', '0.18', '0.20'});
+
+ylim([0.125, 0.21]);
+yticks(0.14:0.02:0.2);
+yticklabels({'0.14', '0.16', '0.18', '0.20'});
+
+set(gca,'fontsize', 14, 'fontname', 'times');
+
+% Save figure
+print(gcf, '../Figures/Figure_9.png', '-dpng', '-r300');
