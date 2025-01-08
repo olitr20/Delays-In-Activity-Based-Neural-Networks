@@ -264,7 +264,7 @@ end
 
         % Define uniform spacing
         tot_dist = cum_dist(end);
-        N = round(length(x) * 0.5);
+        N = round(length(x) * 0.3);
         reg_dist = linspace(0, tot_dist, N);
 
         % Interpolate onto uniform spacing
