@@ -503,8 +503,8 @@ p.tau_1 = 0.2; p.tau_2 = p.tau_1;
 
 bifn2 = ddeBiftoolMain(p);
 
-% Initialise figure 6
-figure(6);
+% Initialise figure 5
+figure(5);
 clf; hold on;
 
 % Plot bifurcations
@@ -553,8 +553,8 @@ p.tau_1 = 0.2; p.tau_2 = p.tau_1;
 p.tau_1 = 0.09; p.tau_2 = p.tau_1;
 [stst.c, po.c] = ddeBiftoolSection(p);
 
-% Initialise figure 7
-figure(7); clf;
+% Initialise figure 6
+figure(6); clf;
 tiledlayout(3,1,'tilespacing','compact','padding','loose');
 
 % Subplot 1 - \tau = 0.5
@@ -691,8 +691,8 @@ clear lambda_max
 le.img = le.lambda_max;
 le.img(le.img < 0) = 0;
 
-% Initialise figure 8
-figure(8);
+% Initialise figure 7
+figure(7);
 clf; hold on;
 
 % Plot lambda max
@@ -763,9 +763,9 @@ p.history = [0.1323 0.15];
 sol.QuasiPeriodic_2 = ddeSim(p);
 le.QuasiPeriodic_2 = lyapunovExponent(p, p.ptbn, p.int);
 
-% Initialise figure 9
-figure(9); clf;
-tiledlayout(2,2,'tilespacing','compact','padding','loose');
+% Initialise figure 8
+figure(8); clf;
+tiledlayout(2, 2, 'tilespacing', 'compact', 'padding', 'loose');
 
 % First subplot
 nexttile; hold on;
@@ -774,17 +774,22 @@ nexttile; hold on;
 plot(sol.Chaotic_1.y(1,:), sol.Chaotic_1.y(2,:), ...
     'k', 'linewidth', 1);
 
+% Plot label
+annotation('textbox',[0.132,0.895,0.06,0.06],'string',"(a)", ...
+    'fontsize',14,'fontname','times','edgecolor','none');
+
 % Format axes
 ylabel("$\mathit{v}$", 'interpreter', 'latex','rotation', 0);
 
 xlim([0.115, 0.235]);
-xticks(0.12:0.02:0.22);
-xticklabels({'0.12', '0.14', '0.16', '0.18', '0.20', '0.22'});
+xticks(0.12:0.01:0.23);
+xticklabels({'0.12', '', '0.14', '', '0.16', '', '0.18', '', '0.20', '', '0.22', ''});
 xtickangle(0);
 
 ylim([0.115, 0.235]);
-yticks(0.12:0.02:0.22);
-yticklabels({'0.12', '0.14', '0.16', '0.18', '0.20', '0.22'});
+yticks(0.12:0.01:0.23);
+yticklabels({'0.12', '', '0.14', '', '0.16', '', '0.18', '', '0.20', '', '0.22', ''});
+
 
 set(gca,'fontsize', 14, 'fontname', 'times');
 
@@ -795,15 +800,19 @@ nexttile; hold on;
 plot(sol.Chaotic_2.y(1,:), sol.Chaotic_2.y(2,:), ...
     'k', 'linewidth', 1);
 
+% Plot label
+annotation('textbox',[0.553,0.895,0.06,0.06],'string',"(b)", ...
+    'fontsize',14,'fontname','times','edgecolor','none');
+
 % Format axes
 xlim([0.115, 0.235]);
-xticks(0.12:0.02:0.22);
-xticklabels({'0.12', '0.14', '0.16', '0.18', '0.20', '0.22'});
+xticks(0.12:0.01:0.23);
+xticklabels({'0.12', '', '0.14', '', '0.16', '', '0.18', '', '0.20', '', '0.22', ''});
 xtickangle(0);
 
 ylim([0.115, 0.235]);
-yticks(0.12:0.02:0.22);
-yticklabels({'0.12', '0.14', '0.16', '0.18', '0.20', '0.22'});
+yticks(0.12:0.01:0.23);
+yticklabels({'0.12', '', '0.14', '', '0.16', '', '0.18', '', '0.20', '', '0.22', ''});
 
 set(gca,'fontsize', 14, 'fontname', 'times');
 
@@ -814,17 +823,22 @@ nexttile; hold on;
 plot(sol.QuasiPeriodic_1.y(1,:), sol.QuasiPeriodic_1.y(2,:), ...
     'k', 'linewidth', 1);
 
+% Plot label
+annotation('textbox',[0.132,0.450,0.06,0.06],'string',"(c)", ...
+    'fontsize',14,'fontname','times','edgecolor','none');
+
 % Format axes
 xlabel("$\mathit{u}$", 'interpreter', 'latex');
 ylabel("$\mathit{v}$", 'interpreter', 'latex','rotation', 0);
 
 xlim([0.125, 0.21]);
-xticks(0.14:0.02:0.2);
-xticklabels({'0.14', '0.16', '0.18', '0.20'});
+xticks(0.13:0.01:0.21);
+xticklabels({'', '0.14', '', '0.16', '', '0.18', '', '0.20', ''});
+xtickangle(0);
 
 ylim([0.125, 0.21]);
-yticks(0.14:0.02:0.2);
-yticklabels({'0.14', '0.16', '0.18', '0.20'});
+yticks(0.13:0.01:0.21);
+yticklabels({'', '0.14', '', '0.16', '', '0.18', '', '0.20', ''});
 
 set(gca,'fontsize', 14, 'fontname', 'times');
 
@@ -835,16 +849,21 @@ nexttile; hold on;
 plot(sol.QuasiPeriodic_2.y(1,:), sol.QuasiPeriodic_2.y(2,:), ...
     'k', 'linewidth', 1);
 
+% Plot label
+annotation('textbox',[0.553,0.450,0.06,0.06],'string',"(d)", ...
+    'fontsize',14,'fontname','times','edgecolor','none');
+
 % Format axes
 xlabel("$\mathit{u}$", 'interpreter', 'latex');
 
 xlim([0.125, 0.21]);
-xticks(0.14:0.02:0.2);
-xticklabels({'0.14', '0.16', '0.18', '0.20'});
+xticks(0.13:0.01:0.21);
+xticklabels({'', '0.14', '', '0.16', '', '0.18', '', '0.20', ''});
+xtickangle(0);
 
 ylim([0.125, 0.21]);
-yticks(0.14:0.02:0.2);
-yticklabels({'0.14', '0.16', '0.18', '0.20'});
+yticks(0.13:0.01:0.21);
+yticklabels({'', '0.14', '', '0.16', '', '0.18', '', '0.20', ''});
 
 set(gca,'fontsize', 14, 'fontname', 'times');
 
