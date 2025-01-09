@@ -60,6 +60,7 @@ stst.parameter=[p.alpha, p.beta, p.a, p.b, p.c, p.d, ...
     p.theta_u, p.theta_v, p.tau_1];
 
 % Extract u and v values from odeSim endpoint
+p.tspan = [0 60]; p.history = [0.7 0.1];
 [stst_u, stst_v] = odeSim(p);
 stst.x=[stst_u; stst_v];
 

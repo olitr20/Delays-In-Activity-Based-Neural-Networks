@@ -43,7 +43,7 @@ ylabel("$\theta_{\mathit{v}}$", 'rotation', 0, 'interpreter', 'latex');
 
 xlim([-7 7]);
 xticks(-6:2:6);
-xticklabels({'','-4','','0','','-4',''});
+xticklabels({'','-4','','0','','4',''});
 
 ylim([-12 0]);
 yticks(-12:2:0);
@@ -358,12 +358,6 @@ tiledlayout(2, 2, 'tilespacing', 'compact', 'padding', 'loose');
 % First subplot
 nexttile; hold on;
 
-% Plot label
-annotation('textbox',[0.13,0.93,0.06,0.06],'string',"(a)", ...
-    'fontsize',24,'fontname','times','edgecolor','none');
-plot(0.95, 0.94, '*', 'color', '#f77e1b', 'markersize', 20, 'linewidth', 2);
-plot(0.95, 0.94, 'square', 'color', '#f77e1b', 'markersize', 24, 'linewidth', 2);
-
 % Plot nullclines
 plot(nullclines.u_null, nullclines.v_range, ...
     '-.', 'color', '#c74440', 'linewidth', 3);
@@ -377,6 +371,12 @@ plot(sol.ode_sim_5(:,1), sol.ode_sim_5(:,2), ...
     '-', 'color', '#378c47', 'linewidth', 2);
 plot(sol.ode_sim_5(end,1), sol.ode_sim_5(end,2), ...
     '.', 'color', 'k', 'markersize', 20);
+
+% Plot label
+annotation('textbox',[0.13,0.93,0.06,0.06],'string',"(a)", ...
+    'fontsize',24,'fontname','times','edgecolor','none');
+plot(0.95, 0.94, '*', 'color', '#f77e1b', 'markersize', 20, 'linewidth', 2);
+plot(0.95, 0.94, 'square', 'color', '#f77e1b', 'markersize', 24, 'linewidth', 2);
 
 % Format axes
 ylabel("$\mathit{v}$", 'interpreter', 'latex', 'rotation', 0, ...
@@ -592,6 +592,10 @@ if isfield(po.a, 'stable2')
     plot(po.a.stable2.x, po.a.stable2.y, 'o', 'markersize', 8, 'color', '#2c70b3', 'linewidth', 2);
 end
 
+% Plot label
+annotation('textbox',[0.14,0.91,0.06,0.06],'string',"(a)", ...
+    'fontsize',24,'fontname','times','edgecolor','none');
+
 % Format axes
 ylabel("$\mathit{u}$", 'rotation', 0, 'interpreter', 'latex', ...
     'position', [0.33, 0.5, -1], 'verticalalignment', 'middle');
@@ -626,6 +630,10 @@ if isfield(po.b, 'stable2')
     plot(po.b.stable2.x, po.b.stable2.y, 'o', 'markersize', 8, 'color', '#2c70b3', 'linewidth', 2);
 end
 
+% Plot label
+annotation('textbox',[0.14,0.62,0.06,0.06],'string',"(b)", ...
+    'fontsize',24,'fontname','times','edgecolor','none');
+
 % Format axes
 ylabel("$\mathit{u}$", 'rotation', 0, 'interpreter', 'latex', ...
     'position', [0.455, 0.45, -1], 'verticalalignment', 'middle');
@@ -659,6 +667,10 @@ if isfield(po.c, 'stable2')
     plot(po.c.stable2.x, po.c.stable2.y, '-', 'color', '#2c70b3', 'linewidth', 3);
     plot(po.c.stable2.x, po.c.stable2.y, 'o', 'markersize', 8, 'color', '#2c70b3', 'linewidth', 2);
 end
+
+% Plot label
+annotation('textbox',[0.14,0.33,0.06,0.06],'string',"(c)", ...
+    'fontsize',24,'fontname','times','edgecolor','none');
 
 % Format axes
 xlabel("$\theta_{\mathit{u}}$", 'interpreter', 'latex');
