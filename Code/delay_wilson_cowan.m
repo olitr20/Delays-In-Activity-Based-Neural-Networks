@@ -36,6 +36,33 @@ plot(bt.theta.uM, bt.theta.vM, 'o', 'color', '#c74440', 'markersize', 16, 'linew
 
 % Plot figure 3 point
 plot(-2, -4, '*', 'color', '#f77e1b', 'markersize', 16, 'linewidth', 2);
+text(-3.1, -3.3, "fig. 3a", 'fontsize', 20, 'fontname', 'times', 'FontAngle', 'italic');
+
+% Define curves bounding oscillatory region
+boundary.u1 = hopf.theta.uP(1:761);
+boundary.v1 = hopf.theta.vP(1:761);
+boundary.u2 = hopf.theta.uP(11579:end);
+boundary.v2 = hopf.theta.vP(11579:end);
+boundary.u3 = hopf.theta.uM(1:6946);
+boundary.v3 = hopf.theta.vM(1:6946);
+boundary.u4 = hopf.theta.uM(17764:end);
+boundary.v4 = hopf.theta.vM(17764:end);
+boundary.u5 = sn.theta.uP(33:3186);
+boundary.v5 = sn.theta.vP(33:3186);
+boundary.u6 = sn.theta.uM(74274:77427);
+boundary.v6 = sn.theta.vM(74274:77427);
+
+% Concatenate boundaries into one curve
+boundary.u = [fliplr(boundary.u1), boundary.u3, ...
+     fliplr(boundary.u5), boundary.u4, ...
+     fliplr(boundary.u2), boundary.u6];
+boundary.v = [fliplr(boundary.v1), boundary.v3, ...
+     fliplr(boundary.v5), boundary.v4, ...
+     fliplr(boundary.v2), boundary.v6];
+
+% Plot oscillatory region
+fill(boundary.u, boundary.v, [0.8, 0.8, 0.8], ...
+    'facealpha', 0.3, 'edgecolor', 'none'); % Light grey shading
 
 % Format axes
 xlabel("$\theta_{\mathit{u}}$", 'interpreter', 'latex');
@@ -54,6 +81,7 @@ set(gca,'fontsize', 24, 'fontname', 'times');
 % Graph Text
 text(0, -9.2, "HB", 'fontsize', 24, 'fontname', 'times');
 text(5, -4, "SN", 'fontsize', 24, 'fontname', 'times');
+text(-0.5, -6, "OR", 'fontsize', 24, 'fontname', 'times');
 
 % Save figure
 print(gcf, '../Figures/Figure_1.png', '-dpng', '-r300');
@@ -282,8 +310,14 @@ clear i x_seg y_seg
 
 % Plot simulation points
 plot(0.5, 1, '*', 'color', '#c74440', 'markersize', 16, 'linewidth', 2);
+text(0.2, 1.11, "fig. 3b", 'fontsize', 20, 'fontname', 'times', 'FontAngle', 'italic');
+
 plot(3, 1, '*', 'color', '#2c70b3', 'markersize', 16, 'linewidth', 2);
+text(2.22, 1.11, "fig. 3c", 'fontsize', 20, 'fontname', 'times', 'FontAngle', 'italic');
+
 plot(6, 1, '*', 'color', '#378c47', 'markersize', 16, 'linewidth', 2);
+text(5, 1.11, "fig. 3d", 'fontsize', 20, 'fontname', 'times', 'FontAngle', 'italic');
+
 
 % Add a colour bar for reference
 colormap(p.c_palette);
@@ -353,7 +387,7 @@ sol.dde_sim_4 = ddeSim(p);
 figure(4);
 set(gcf, 'position', [400, 100, 600, 450]);
 clf;
-tiledlayout(2, 2, 'tilespacing', 'compact', 'padding', 'loose');
+tiledlayout(2, 2, 'tilespacing', 'loose', 'padding', 'loose');
 
 % First subplot
 nexttile; hold on;
@@ -409,7 +443,7 @@ plot(sol.dde_sim_1.y(1,:), sol.dde_sim_1.y(2,:), ...
     '-', 'color', '#378c47', 'linewidth', 2);
 
 % Plot label
-annotation('textbox',[0.57,0.93,0.06,0.06],'string',"(b)", ...
+annotation('textbox',[0.59,0.93,0.06,0.06],'string',"(b)", ...
     'fontsize',24,'fontname','times','edgecolor','none');
 plot(0.95, 0.94, '*', 'color', '#c74440', 'markersize', 20, 'linewidth', 2);
 plot(0.95, 0.94, 'square', 'color', '#c74440', 'markersize', 24, 'linewidth', 2);
@@ -481,7 +515,7 @@ plot(sol.dde_sim_3.y(1,:), sol.dde_sim_3.y(2,:), ...
     '-', 'color', '#378c47', 'linewidth', 2);
 
 % Plot label
-annotation('textbox',[0.57,0.48,0.06,0.06],'string',"(d)", ...
+annotation('textbox',[0.59,0.48,0.06,0.06],'string',"(d)", ...
     'fontsize',24,'fontname','times','edgecolor','none');
 plot(0.95, 0.94, '*', 'color', '#378c47', 'markersize', 20, 'linewidth', 2);
 plot(0.95, 0.94, 'square', 'color', '#378c47', 'markersize', 24, 'linewidth', 2);
@@ -566,11 +600,11 @@ p.tau_1 = 0.2; p.tau_2 = p.tau_1;
 p.tau_1 = 0.09; p.tau_2 = p.tau_1;
 [stst.c, po.c] = ddeBiftoolSection(p);
 
-% Initialise figure 6
+%% Initialise figure 6
 figure(6);
 set(gcf, 'position', [400, 100, 600, 450]);
 clf;
-tiledlayout(3,1,'tilespacing','compact','padding','loose');
+tiledlayout(3,1,'tilespacing','loose','padding','loose');
 
 % Subplot 1 - \tau = 0.5
 nexttile; hold on;
@@ -593,7 +627,7 @@ if isfield(po.a, 'stable2')
 end
 
 % Plot label
-annotation('textbox',[0.14,0.91,0.06,0.06],'string',"(a)", ...
+annotation('textbox',[0.14,0.933,0.06,0.06],'string',"(a)", ...
     'fontsize',24,'fontname','times','edgecolor','none');
 
 % Format axes
@@ -631,7 +665,7 @@ if isfield(po.b, 'stable2')
 end
 
 % Plot label
-annotation('textbox',[0.14,0.62,0.06,0.06],'string',"(b)", ...
+annotation('textbox',[0.14,0.64,0.06,0.06],'string',"(b)", ...
     'fontsize',24,'fontname','times','edgecolor','none');
 
 % Format axes
@@ -669,7 +703,7 @@ if isfield(po.c, 'stable2')
 end
 
 % Plot label
-annotation('textbox',[0.14,0.33,0.06,0.06],'string',"(c)", ...
+annotation('textbox',[0.14,0.345,0.06,0.06],'string',"(c)", ...
     'fontsize',24,'fontname','times','edgecolor','none');
 
 % Format axes
